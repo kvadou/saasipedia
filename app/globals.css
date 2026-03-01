@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-wiki-text antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 { @apply text-3xl md:text-4xl; }
+  h2 { @apply text-2xl md:text-2xl; }
+  h3 { @apply text-xl; }
+}
+
+@layer components {
+  .wiki-card {
+    @apply bg-wiki-bg-alt border border-wiki-border rounded-lg p-5
+           hover:border-wiki-border-dark hover:shadow-sm transition-all;
+  }
+
+  .wiki-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-wiki-indigo/10 text-wiki-indigo;
+  }
+
+  .wiki-badge-ai {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+           bg-purple-100 text-purple-700;
+  }
+
+  .wiki-badge-premium {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+           bg-amber-100 text-amber-700;
+  }
+
+  .wiki-link {
+    @apply text-wiki-accent hover:text-wiki-accent-hover hover:underline;
+  }
+
+  .wiki-section {
+    @apply mb-8 scroll-mt-20;
+  }
+
+  .wiki-toc-link {
+    @apply block py-1 text-sm text-wiki-text-muted hover:text-wiki-accent transition-colors;
+  }
+
+  .wiki-toc-link-active {
+    @apply text-wiki-accent font-medium;
+  }
+
+  .quality-bar {
+    @apply h-1.5 rounded-full bg-wiki-border overflow-hidden;
+  }
+
+  .quality-bar-fill {
+    @apply h-full rounded-full transition-all;
+  }
+}
