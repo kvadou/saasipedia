@@ -241,9 +241,13 @@ export default async function ProductPage({ params }: PageProps) {
                         {alsoIn.map((p, i) => (
                           <span key={p.id}>
                             {i > 0 && ', '}
-                            <Link href={`/wiki/${p.slug}`} className="wiki-link">
-                              {p.name}
-                            </Link>
+                            {p.slug ? (
+                              <Link href={`/wiki/${p.slug}`} className="wiki-link">
+                                {p.name}
+                              </Link>
+                            ) : (
+                              <span>{p.name}</span>
+                            )}
                           </span>
                         ))}
                       </div>

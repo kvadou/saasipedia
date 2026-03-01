@@ -359,7 +359,36 @@ export async function getProductSlugMap(
 
   const map: Record<string, string> = {};
   for (const row of data) {
-    map[row.name] = row.slug;
+    if (row.slug) {
+      map[row.name] = row.slug;
+    }
   }
+
+  // For unmatched names, try case-insensitive lookup
+  const unmatched = names.filter((n) => !map[n]);
+  if (unmatched.length > 0) {
+    const lowerNames = unmatched.map((n) => n.toLowerCase());
+    const { data: fuzzyData } = await supabase
+      .from('reaper_products')
+      .select('name, slug')
+      .eq('is_active', true)
+      .not('slug', 'is', null);
+
+    if (fuzzyData) {
+      const lowerMap: Record<string, { name: string; slug: string }> = {};
+      for (const row of fuzzyData) {
+        if (row.slug) {
+          lowerMap[row.name.toLowerCase()] = row;
+        }
+      }
+      for (const name of unmatched) {
+        const match = lowerMap[name.toLowerCase()];
+        if (match) {
+          map[name] = match.slug;
+        }
+      }
+    }
+  }
+
   return map;
 }
