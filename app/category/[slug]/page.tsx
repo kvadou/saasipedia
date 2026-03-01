@@ -24,6 +24,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${name} Software — Browse Products`,
     description: `Explore and compare ${name} software products. View features, pricing, and integrations for ${match?.count || 'all'} tools in this category.`,
+    alternates: {
+      canonical: `/category/${params.slug}`,
+    },
+    openGraph: {
+      title: `${name} Software — Browse Products | SaaSipedia`,
+      description: `Explore and compare ${name} software products. View features, pricing, and integrations for ${match?.count || 'all'} tools in this category.`,
+    },
   };
 }
 
@@ -43,27 +50,54 @@ export default async function CategoryPage({ params }: PageProps) {
         const catProducts = await getCategoryProducts(cat.category);
         if (catProducts.length > 0) {
           // Redirect would be ideal, but we'll just render
-          return renderCategoryPage(cat.category, catProducts, categories);
+          return renderCategoryPage(cat.category, catProducts, categories, params.slug);
         }
       }
     }
     notFound();
   }
 
-  return renderCategoryPage(categoryName, products, categories);
+  return renderCategoryPage(categoryName, products, categories, params.slug);
 }
 
 function renderCategoryPage(
   categoryName: string,
   products: import('@/lib/data').Product[],
-  allCategories: import('@/lib/data').CategoryInfo[]
+  allCategories: import('@/lib/data').CategoryInfo[],
+  slug: string
 ) {
   const relatedCategories = allCategories
     .filter((c) => c.category !== categoryName)
     .slice(0, 6);
 
+  const breadcrumbJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://saasipedia.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Categories',
+        item: 'https://saasipedia.com/categories',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: categoryName,
+        item: `https://saasipedia.com/category/${slug}`,
+      },
+    ],
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbJsonLd }} />
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-sm text-wiki-text-muted mb-6">
         <Link href="/" className="hover:text-wiki-accent transition-colors">

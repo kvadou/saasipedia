@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   title: 'Browse by Category',
   description:
     'Browse all SaaS software categories. Find the right business tools by category with detailed feature comparisons.',
+  alternates: {
+    canonical: '/categories',
+  },
+  openGraph: {
+    title: 'Browse SaaS Categories | SaaSipedia',
+    description:
+      'Browse all SaaS software categories. Find the right business tools by category with detailed feature comparisons.',
+  },
 };
 
 export default async function CategoriesPage() {

@@ -5,6 +5,7 @@ import SearchResultsClient from './SearchResultsClient';
 export const metadata: Metadata = {
   title: 'Search',
   description: 'Search for SaaS products by name, category, or feature.',
+  robots: { index: false, follow: true },
 };
 
 interface PageProps {

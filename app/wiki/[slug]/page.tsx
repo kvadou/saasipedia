@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${product.name} — Features, Pricing & Integrations`,
     description,
+    alternates: {
+      canonical: `/wiki/${params.slug}`,
+    },
     openGraph: {
       title: `${product.name} — Features, Pricing & Integrations | SaaSipedia`,
       description,
@@ -101,8 +104,73 @@ export default async function ProductPage({ params }: PageProps) {
     tocSections.push({ id: 'related', label: 'Related Products' });
   }
 
+  // Structured data: SoftwareApplication + BreadcrumbList
+  const lowestPrice = product.pricing_tiers
+    .map((t) => t.price_monthly)
+    .filter((p): p is number => p != null && p > 0)
+    .sort((a, b) => a - b)[0];
+
+  const softwareJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: product.name,
+    description: product.description || product.tagline || undefined,
+    applicationCategory: product.category || 'BusinessApplication',
+    operatingSystem: 'Web',
+    url: product.url || `https://saasipedia.com/wiki/${product.slug}`,
+    ...(lowestPrice != null && {
+      offers: {
+        '@type': 'Offer',
+        price: lowestPrice,
+        priceCurrency: 'USD',
+      },
+    }),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://saasipedia.com',
+      },
+      ...(product.category
+        ? [
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: product.category,
+              item: `https://saasipedia.com/category/${slugifyCategory(product.category)}`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: product.name,
+              item: `https://saasipedia.com/wiki/${product.slug}`,
+            },
+          ]
+        : [
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: product.name,
+              item: `https://saasipedia.com/wiki/${product.slug}`,
+            },
+          ]),
+    ],
+  };
+
+  const jsonLdString = JSON.stringify([softwareJsonLd, breadcrumbJsonLd]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString }}
+      />
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-sm text-wiki-text-muted mb-6">
         <Link href="/" className="hover:text-wiki-accent transition-colors">

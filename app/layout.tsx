@@ -7,17 +7,45 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://saasipedia.com'),
   title: {
     default: 'SaaSipedia — The Encyclopedia of Business Software',
     template: '%s | SaaSipedia',
   },
   description:
     'Explore detailed features, pricing, and integrations for hundreds of SaaS products. The free, open encyclopedia of business software.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'SaaSipedia — The Encyclopedia of Business Software',
     description:
       'Explore detailed features, pricing, and integrations for hundreds of SaaS products.',
     type: 'website',
+    siteName: 'SaaSipedia',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SaaSipedia — The Encyclopedia of Business Software',
+    description:
+      'Explore detailed features, pricing, and integrations for hundreds of SaaS products.',
+  },
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'SaaSipedia',
+  url: 'https://saasipedia.com',
+  description:
+    'The free, open encyclopedia of business software. Explore features, pricing, and integrations for hundreds of SaaS products.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://saasipedia.com/search?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
   },
 };
 
@@ -29,6 +57,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteJsonLd),
+          }}
+        />
         <Header />
         <main className="min-h-[calc(100vh-theme(spacing.14)-theme(spacing.32))]">
           {children}
