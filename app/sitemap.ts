@@ -65,5 +65,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...productPages, ...categoryPages];
+  // Alternatives pages (one per product)
+  const alternativesPages: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
+    url: `${baseUrl}/alternatives/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }));
+
+  // Integrations pages (one per product)
+  const integrationsPages: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
+    url: `${baseUrl}/integrations/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }));
+
+  return [
+    ...staticPages,
+    ...productPages,
+    ...categoryPages,
+    ...alternativesPages,
+    ...integrationsPages,
+  ];
 }

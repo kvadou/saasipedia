@@ -341,6 +341,114 @@ export async function getTotalCategoryCount(): Promise<number> {
   return categories.length;
 }
 
+// ─── Alternatives ────────────────────────────────────────────────────────────
+
+export async function getAlternatives(
+  productId: string,
+  category: string,
+  limit: number = 15
+): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .eq('category', category)
+    .neq('id', productId)
+    .order('quality_score', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return (data ?? []) as Product[];
+}
+
+// ─── Reverse Integration Lookup ──────────────────────────────────────────────
+
+export async function getProductsIntegratingWith(
+  productName: string,
+  excludeProductId: string,
+  limit: number = 50
+): Promise<Product[]> {
+  // Find integration rows where the integration name matches this product
+  const { data: integrationRows, error: iErr } = await supabase
+    .from('reaper_integrations')
+    .select('product_id')
+    .ilike('name', productName)
+    .neq('product_id', excludeProductId)
+    .limit(limit);
+
+  if (iErr || !integrationRows || integrationRows.length === 0) return [];
+
+  const productIds = Array.from(
+    new Set(integrationRows.map((r) => r.product_id))
+  );
+
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .in('id', productIds)
+    .order('quality_score', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return (data ?? []) as Product[];
+}
+
+// ─── Product Lite (for pages that only need basic product info) ──────────────
+
+export async function getProductLiteBySlug(
+  slug: string
+): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_active', true)
+    .single();
+
+  if (error || !data) return null;
+  return data as Product;
+}
+
+export async function getProductIntegrations(
+  productId: string
+): Promise<Integration[]> {
+  const { data, error } = await supabase
+    .from('reaper_integrations')
+    .select('*')
+    .eq('product_id', productId)
+    .order('name', { ascending: true });
+
+  if (error) return [];
+  return (data ?? []) as Integration[];
+}
+
+export async function getProductPricingTiers(
+  productId: string
+): Promise<PricingTier[]> {
+  const { data, error } = await supabase
+    .from('reaper_pricing_tiers')
+    .select('*')
+    .eq('product_id', productId)
+    .order('tier_order', { ascending: true });
+
+  if (error) return [];
+  return (data ?? []) as PricingTier[];
+}
+
+// ─── All Product Slugs (for sitemap / static params) ─────────────────────────
+
+export async function getAllProductSlugs(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('slug')
+    .eq('is_active', true)
+    .not('slug', 'is', null);
+
+  if (error || !data) return [];
+  return data.map((r) => r.slug).filter(Boolean);
+}
+
 // ─── Integration cross-linking ──────────────────────────────────────────────
 
 export async function getProductSlugMap(

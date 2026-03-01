@@ -511,6 +511,22 @@ export default async function ProductPage({ params }: PageProps) {
                 </div>
               )}
             </div>
+
+            {/* Cross-links */}
+            <div className="mt-4 pt-4 border-t border-wiki-border space-y-1.5">
+              <Link
+                href={`/alternatives/${product.slug}`}
+                className="block text-xs wiki-link"
+              >
+                View alternatives
+              </Link>
+              <Link
+                href={`/integrations/${product.slug}`}
+                className="block text-xs wiki-link"
+              >
+                View integrations
+              </Link>
+            </div>
           </div>
         </aside>
       </div>
