@@ -14,7 +14,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-14 gap-4">
           <Link
             href="/"
-            className="text-xl font-bold text-wiki-text hover:text-wiki-accent transition-colors shrink-0"
+            className="text-xl font-bold text-wiki-accent hover:text-wiki-accent-hover transition-colors shrink-0"
           >
             SaaSipedia
           </Link>

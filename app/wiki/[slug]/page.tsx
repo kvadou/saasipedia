@@ -205,22 +205,20 @@ export default async function ProductPage({ params }: PageProps) {
         <article className="flex-1 min-w-0">
           {/* Title area */}
           <div className="mb-8">
-            <div className="flex items-start gap-3 mb-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-wiki-text">
-                {product.name}
-              </h1>
-              {product.url && (
-                <a
-                  href={product.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 text-wiki-text-muted hover:text-wiki-accent transition-colors shrink-0"
-                  title="Visit website"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              )}
-            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-wiki-text mb-1">
+              {product.name}
+            </h1>
+            {product.url && (
+              <a
+                href={product.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-wiki-accent hover:text-wiki-accent-hover transition-colors mb-1"
+              >
+                {product.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
 
             {product.category && (
               <Link
@@ -520,6 +518,17 @@ export default async function ProductPage({ params }: PageProps) {
 
             {/* Cross-links */}
             <div className="mt-4 pt-4 border-t border-wiki-border space-y-1.5">
+              {product.url && (
+                <a
+                  href={product.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-xs wiki-link"
+                >
+                  Visit website
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
               <Link
                 href={`/alternatives/${product.slug}`}
                 className="block text-xs wiki-link"
