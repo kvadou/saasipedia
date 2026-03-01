@@ -1,7 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import SearchBar from './SearchBar';
 
 export default function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-wiki-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,25 +19,48 @@ export default function Header() {
             SaaSipedia
           </Link>
 
-          <div className="flex-1 flex justify-center max-w-xl">
+          {/* Search — desktop */}
+          <div className="hidden sm:flex flex-1 justify-center max-w-xl">
             <SearchBar size="sm" />
           </div>
 
-          <nav className="flex items-center gap-5 text-sm shrink-0">
+          {/* Nav — desktop */}
+          <nav className="hidden sm:flex items-center gap-5 text-sm shrink-0">
             <Link
               href="/categories"
               className="text-wiki-text-muted hover:text-wiki-text transition-colors"
             >
               Categories
             </Link>
-            <Link
-              href="/about"
-              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
-            >
-              About
-            </Link>
           </nav>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="sm:hidden p-2 -mr-2 text-wiki-text-muted hover:text-wiki-text transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
+
+        {/* Mobile dropdown */}
+        {mobileOpen && (
+          <div className="sm:hidden pb-4 border-t border-wiki-border pt-3">
+            <div className="mb-3">
+              <SearchBar size="sm" placeholder="Search products..." />
+            </div>
+            <nav className="flex flex-col gap-1">
+              <Link
+                href="/categories"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Categories
+              </Link>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );

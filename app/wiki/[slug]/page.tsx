@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronRight, ExternalLink, Layers, Tag, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import { ChevronRight, ExternalLink, Tag, Sparkles, Crown, ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
+import MobileToc from '@/components/MobileToc';
 import {
   getProductBySlug,
   getRelatedProducts,
@@ -121,6 +122,9 @@ export default async function ProductPage({ params }: PageProps) {
         )}
         <span className="text-wiki-text">{product.name}</span>
       </nav>
+
+      {/* Mobile Table of Contents */}
+      <MobileToc sections={tocSections} />
 
       <div className="flex gap-8">
         {/* Main content */}
@@ -257,7 +261,7 @@ export default async function ProductPage({ params }: PageProps) {
                 Pricing
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {product.pricing_tiers.map((tier) => (
                   <div
                     key={tier.id}

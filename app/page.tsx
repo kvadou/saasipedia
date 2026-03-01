@@ -45,7 +45,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="flex justify-center gap-8 text-sm text-wiki-text-muted">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-wiki-text-muted">
             <div className="flex items-center gap-1.5">
               <Layers className="w-4 h-4" />
               <span>
