@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
-import { ChevronRight, Layers, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import {
+  ChevronRight,
+  Layers,
+  SlidersHorizontal,
+  X,
+  ChevronDown,
+  ChevronLeft,
+  ExternalLink,
+} from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import type { Product } from '@/lib/data';
 
@@ -20,10 +28,13 @@ interface Props {
   categories: CategoryFacet[];
 }
 
+const RESULTS_PER_PAGE = 24;
+
 export default function SearchResultsClient({ query, initialResults, categories }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredAndSorted = useMemo(() => {
     let results = [...initialResults];
@@ -50,6 +61,13 @@ export default function SearchResultsClient({ query, initialResults, categories 
     return results;
   }, [initialResults, selectedCategories, sortBy]);
 
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSorted.length / RESULTS_PER_PAGE);
+  const paginatedResults = filteredAndSorted.slice(
+    (currentPage - 1) * RESULTS_PER_PAGE,
+    currentPage * RESULTS_PER_PAGE
+  );
+
   function toggleCategory(name: string) {
     setSelectedCategories((prev) => {
       const next = new Set(prev);
@@ -60,11 +78,18 @@ export default function SearchResultsClient({ query, initialResults, categories 
       }
       return next;
     });
+    setCurrentPage(1);
   }
 
   function clearFilters() {
     setSelectedCategories(new Set());
     setSortBy('relevance');
+    setCurrentPage(1);
+  }
+
+  function handleSortChange(value: SortOption) {
+    setSortBy(value);
+    setCurrentPage(1);
   }
 
   const hasActiveFilters = selectedCategories.size > 0 || sortBy !== 'relevance';
@@ -110,7 +135,7 @@ export default function SearchResultsClient({ query, initialResults, categories 
                 </label>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
                   className="w-full text-sm border border-wiki-border rounded-md px-2.5 py-1.5 bg-white
                     text-wiki-text focus:outline-none focus:ring-2 focus:ring-wiki-accent/30 focus:border-wiki-accent"
                 >
@@ -125,7 +150,7 @@ export default function SearchResultsClient({ query, initialResults, categories 
               {categories.length > 0 && (
                 <div>
                   <label className="text-xs font-medium text-wiki-text-muted uppercase tracking-wider mb-2 block">
-                    Category
+                    Category ({categories.length})
                   </label>
                   <div className="space-y-0.5 max-h-96 overflow-y-auto">
                     {categories.map((cat) => (
@@ -157,6 +182,11 @@ export default function SearchResultsClient({ query, initialResults, categories 
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters & Sort
+              {hasActiveFilters && (
+                <span className="w-5 h-5 rounded-full bg-wiki-accent text-white text-xs flex items-center justify-center">
+                  {selectedCategories.size + (sortBy !== 'relevance' ? 1 : 0)}
+                </span>
+              )}
               <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
 
@@ -181,7 +211,7 @@ export default function SearchResultsClient({ query, initialResults, categories 
                   </label>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                    onChange={(e) => handleSortChange(e.target.value as SortOption)}
                     className="w-full text-sm border border-wiki-border rounded-md px-2.5 py-2 bg-white
                       text-wiki-text focus:outline-none focus:ring-2 focus:ring-wiki-accent/30"
                   >
@@ -199,7 +229,7 @@ export default function SearchResultsClient({ query, initialResults, categories 
                       Category
                     </label>
                     <div className="flex flex-wrap gap-1.5">
-                      {categories.slice(0, 12).map((cat) => (
+                      {categories.slice(0, 16).map((cat) => (
                         <button
                           key={cat.slug}
                           onClick={() => toggleCategory(cat.name)}
@@ -212,6 +242,11 @@ export default function SearchResultsClient({ query, initialResults, categories 
                           {cat.name} ({cat.count})
                         </button>
                       ))}
+                      {categories.length > 16 && (
+                        <span className="px-2.5 py-1 text-xs text-wiki-text-muted">
+                          +{categories.length - 16} more
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -229,11 +264,16 @@ export default function SearchResultsClient({ query, initialResults, categories 
                   ? ` in ${selectedCategories.size} ${selectedCategories.size === 1 ? 'category' : 'categories'}`
                   : ''}
                 {' '}for &ldquo;{query}&rdquo;
+                {totalPages > 1 && (
+                  <span className="ml-1">
+                    (page {currentPage} of {totalPages})
+                  </span>
+                )}
               </p>
 
               {/* Active filter pills */}
               {selectedCategories.size > 0 && (
-                <div className="hidden lg:flex items-center gap-1.5">
+                <div className="hidden lg:flex items-center gap-1.5 flex-wrap">
                   {Array.from(selectedCategories).map((cat) => (
                     <button
                       key={cat}
@@ -274,61 +314,133 @@ export default function SearchResultsClient({ query, initialResults, categories 
                 )}
               </div>
             ) : (
-              <div className="space-y-2">
-                {filteredAndSorted.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/wiki/${product.slug}`}
-                    className="flex items-start gap-4 p-4 rounded-lg border border-wiki-border
-                      hover:border-wiki-accent/30 hover:bg-wiki-bg-alt transition-all group"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h2 className="font-semibold text-wiki-text group-hover:text-wiki-accent transition-colors">
-                          {product.name}
-                        </h2>
-                        {product.category && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-wiki-indigo/10 text-wiki-indigo">
-                            {product.category}
-                          </span>
-                        )}
-                      </div>
-                      {product.tagline && (
-                        <p className="text-sm text-wiki-text-muted line-clamp-2">
-                          {product.tagline}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0 mt-1">
-                      {product.quality_score > 0 && (
-                        <div className="hidden sm:flex items-center gap-1.5">
-                          <div className="w-12 h-1.5 rounded-full bg-wiki-border overflow-hidden">
-                            <div
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${Math.round(product.quality_score * 100)}%`,
-                                backgroundColor:
-                                  product.quality_score >= 0.7
-                                    ? '#22c55e'
-                                    : product.quality_score >= 0.4
-                                    ? '#eab308'
-                                    : '#ef4444',
-                              }}
-                            />
+              <>
+                <div className="space-y-2">
+                  {paginatedResults.map((product) => {
+                    const qualityPercent = Math.round((product.quality_score ?? 0) * 100);
+                    return (
+                      <Link
+                        key={product.id}
+                        href={`/wiki/${product.slug}`}
+                        className="flex items-start gap-4 p-4 rounded-lg border border-wiki-border
+                          hover:border-wiki-accent/30 hover:bg-wiki-bg-alt transition-all group"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <h2 className="font-semibold text-wiki-text group-hover:text-wiki-accent transition-colors">
+                              {product.name}
+                            </h2>
+                            {product.category && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-wiki-indigo/10 text-wiki-indigo">
+                                {product.category}
+                              </span>
+                            )}
                           </div>
-                          <span className="text-xs text-wiki-text-muted">
-                            {Math.round(product.quality_score * 100)}%
-                          </span>
+                          {product.tagline && (
+                            <p className="text-sm text-wiki-text-muted line-clamp-2 mb-1.5">
+                              {product.tagline}
+                            </p>
+                          )}
+                          {product.url && (
+                            <span className="inline-flex items-center gap-1 text-xs text-wiki-text-muted/70">
+                              <ExternalLink className="w-3 h-3" />
+                              {product.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      <div className="flex items-center gap-1 text-xs text-wiki-text-muted">
-                        <Layers className="w-3.5 h-3.5" />
-                        {product.feature_count}
-                      </div>
+                        <div className="flex items-center gap-3 shrink-0 mt-1">
+                          {qualityPercent > 0 && (
+                            <div className="hidden sm:flex items-center gap-1.5">
+                              <div className="w-12 h-1.5 rounded-full bg-wiki-border overflow-hidden">
+                                <div
+                                  className="h-full rounded-full"
+                                  style={{
+                                    width: `${qualityPercent}%`,
+                                    backgroundColor:
+                                      qualityPercent >= 70
+                                        ? '#22c55e'
+                                        : qualityPercent >= 40
+                                        ? '#eab308'
+                                        : '#ef4444',
+                                  }}
+                                />
+                              </div>
+                              <span className="text-xs text-wiki-text-muted">
+                                {qualityPercent}%
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1 text-xs text-wiki-text-muted">
+                            <Layers className="w-3.5 h-3.5" />
+                            {product.feature_count}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-wiki-border
+                        hover:bg-wiki-bg-alt transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Prev
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter((page) => {
+                          // Show first, last, current, and neighbors
+                          if (page === 1 || page === totalPages) return true;
+                          if (Math.abs(page - currentPage) <= 1) return true;
+                          return false;
+                        })
+                        .reduce<(number | 'ellipsis')[]>((acc, page, i, arr) => {
+                          if (i > 0 && page - (arr[i - 1] as number) > 1) {
+                            acc.push('ellipsis');
+                          }
+                          acc.push(page);
+                          return acc;
+                        }, [])
+                        .map((item, i) =>
+                          item === 'ellipsis' ? (
+                            <span key={`ellipsis-${i}`} className="px-2 text-wiki-text-muted">
+                              ...
+                            </span>
+                          ) : (
+                            <button
+                              key={item}
+                              onClick={() => setCurrentPage(item)}
+                              className={`w-9 h-9 text-sm rounded-lg transition-colors ${
+                                currentPage === item
+                                  ? 'bg-wiki-accent text-white font-medium'
+                                  : 'hover:bg-wiki-bg-alt text-wiki-text-muted'
+                              }`}
+                            >
+                              {item}
+                            </button>
+                          )
+                        )}
                     </div>
-                  </Link>
-                ))}
-              </div>
+
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-wiki-border
+                        hover:bg-wiki-bg-alt transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

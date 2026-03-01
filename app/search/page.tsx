@@ -2,19 +2,29 @@ import type { Metadata } from 'next';
 import { searchProducts, slugifyCategory } from '@/lib/data';
 import SearchResultsClient from './SearchResultsClient';
 
-export const metadata: Metadata = {
-  title: 'Search',
-  description: 'Search for SaaS products by name, category, or feature.',
-  robots: { index: false, follow: true },
-};
-
 interface PageProps {
   searchParams: { q?: string };
 }
 
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const query = searchParams.q?.trim() || '';
+  if (query) {
+    return {
+      title: `Search results for "${query}" — SaaSipedia`,
+      description: `Find SaaS products matching "${query}". Compare features, pricing, and alternatives across business software.`,
+      robots: { index: false, follow: true },
+    };
+  }
+  return {
+    title: 'Search SaaS Products — SaaSipedia',
+    description: 'Search across thousands of SaaS products by name, category, or feature. Compare features, pricing, and alternatives.',
+    robots: { index: false, follow: true },
+  };
+}
+
 export default async function SearchPage({ searchParams }: PageProps) {
   const query = searchParams.q?.trim() || '';
-  const results = query ? await searchProducts(query, 100) : [];
+  const results = query ? await searchProducts(query, 200) : [];
 
   // Build category facets from results
   const categoryMap: Record<string, number> = {};

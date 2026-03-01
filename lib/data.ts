@@ -274,12 +274,13 @@ export async function searchProducts(
   }
 
   // Fallback to ilike
+  const sanitized = query.replace(/[%_\\]/g, '\\$&');
   const { data, error } = await supabase
     .from('reaper_products')
     .select('*')
     .eq('is_active', true)
     .or(
-      `name.ilike.%${query}%,tagline.ilike.%${query}%,category.ilike.%${query}%`
+      `name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`
     )
     .order('quality_score', { ascending: false })
     .limit(limit);
@@ -573,6 +574,26 @@ export async function getTopProductSlugs(limit: number = 100): Promise<string[]>
 
   if (error || !data) return [];
   return data.map((r) => r.slug).filter(Boolean);
+}
+
+// ─── Best-of Category Queries ───────────────────────────────────────────────
+
+export async function getTopProductsByCategory(
+  categoryName: string,
+  limit: number = 15
+): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .eq('category', categoryName)
+    .gte('quality_score', 0.3)
+    .order('quality_score', { ascending: false })
+    .order('feature_count', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return (data ?? []) as Product[];
 }
 
 // ─── Integration cross-linking ──────────────────────────────────────────────

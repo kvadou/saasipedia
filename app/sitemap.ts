@@ -111,6 +111,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
+  // "Best X" pages (one per category with 3+ products, plus audience variants for 5+)
+  const audiences = ['small-business', 'enterprise', 'startups', 'freelancers'];
+  const categoryCounts: Record<string, number> = {};
+  for (const row of categoryRows ?? []) {
+    const cat = row.category as string;
+    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+  }
+
+  const bestOfPages: MetadataRoute.Sitemap = [];
+  for (const cat of uniqueCategories) {
+    const count = categoryCounts[cat] || 0;
+    if (count < 3) continue;
+    const catSlug = slugifyCategory(cat);
+    bestOfPages.push({
+      url: `${baseUrl}/best/${catSlug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    });
+    if (count >= 5) {
+      for (const aud of audiences) {
+        bestOfPages.push({
+          url: `${baseUrl}/best/${catSlug}-for-${aud}`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.5,
+        });
+      }
+    }
+  }
+
   return [
     ...staticPages,
     ...productPages,
@@ -118,5 +149,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...featurePages,
     ...alternativesPages,
     ...integrationsPages,
+    ...bestOfPages,
   ];
 }

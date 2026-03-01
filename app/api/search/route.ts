@@ -8,22 +8,29 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ results: [] });
   }
 
+  // Sanitize query for ilike (escape special chars)
+  const sanitized = q.replace(/[%_\\]/g, '\\$&');
+
   // Try full-text search first
   const tsQuery = q
     .split(/\s+/)
-    .map((w) => w + ':*')
+    .filter((w) => w.length > 0)
+    .map((w) => w.replace(/[^a-zA-Z0-9]/g, '') + ':*')
+    .filter((w) => w.length > 2)
     .join(' & ');
 
-  const { data: ftsData } = await supabase
-    .from('reaper_products')
-    .select('id, name, slug, category, tagline, feature_count, quality_score')
-    .eq('is_active', true)
-    .textSearch('search_vector', tsQuery)
-    .order('quality_score', { ascending: false })
-    .limit(8);
+  if (tsQuery) {
+    const { data: ftsData } = await supabase
+      .from('reaper_products')
+      .select('id, name, slug, category, tagline, feature_count, quality_score')
+      .eq('is_active', true)
+      .textSearch('search_vector', tsQuery)
+      .order('quality_score', { ascending: false })
+      .limit(10);
 
-  if (ftsData && ftsData.length > 0) {
-    return NextResponse.json({ results: ftsData });
+    if (ftsData && ftsData.length > 0) {
+      return NextResponse.json({ results: ftsData });
+    }
   }
 
   // Fallback to ilike
@@ -31,9 +38,9 @@ export async function GET(request: NextRequest) {
     .from('reaper_products')
     .select('id, name, slug, category, tagline, feature_count, quality_score')
     .eq('is_active', true)
-    .or(`name.ilike.%${q}%,tagline.ilike.%${q}%,category.ilike.%${q}%`)
+    .or(`name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`)
     .order('quality_score', { ascending: false })
-    .limit(8);
+    .limit(10);
 
   return NextResponse.json({ results: data ?? [] });
 }

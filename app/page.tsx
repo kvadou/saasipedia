@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, Layers, Tag, Search as SearchIcon } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import ProductCard from '@/components/ProductCard';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import {
   getCategories,
   getFeaturedProducts,
@@ -99,7 +100,7 @@ export default async function HomePage() {
 
       {/* Recently Updated / Featured */}
       {displayProducts.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <h2 className="text-xl font-semibold text-wiki-text mb-6">
             {recent.length > 0 ? 'Recently Updated' : 'Featured Products'}
           </h2>
@@ -111,6 +112,11 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Newsletter */}
+      <section className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <NewsletterSignup source="homepage" />
+      </section>
     </div>
   );
 }

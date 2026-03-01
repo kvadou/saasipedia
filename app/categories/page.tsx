@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronRight } from 'lucide-react';
 import { getCategories, getCategoryProducts } from '@/lib/data';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export const revalidate = 3600;
 
@@ -92,6 +93,10 @@ export default async function CategoriesPage() {
             </div>
           </Link>
         ))}
+      </div>
+
+      <div className="max-w-xl mx-auto mt-12">
+        <NewsletterSignup source="categories" />
       </div>
     </div>
   );
