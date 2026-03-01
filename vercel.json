@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "saasipedia.org" }],
+      "destination": "https://saasipedia.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "www.saasipedia.org" }],
+      "destination": "https://saasipedia.com/:path",
+      "permanent": true
+    }
+  ]
+}
