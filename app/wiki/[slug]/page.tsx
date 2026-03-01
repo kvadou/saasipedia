@@ -9,10 +9,16 @@ import {
   getRelatedProducts,
   getProductsWithFeatureCategory,
   getProductSlugMap,
+  getTopProductSlugs,
   slugifyCategory,
   type Feature,
   type Product,
 } from '@/lib/data';
+
+export async function generateStaticParams() {
+  const slugs = await getTopProductSlugs(100);
+  return slugs.map((slug) => ({ slug }));
+}
 
 export const revalidate = 3600;
 

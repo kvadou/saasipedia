@@ -449,6 +449,132 @@ export async function getAllProductSlugs(): Promise<string[]> {
   return data.map((r) => r.slug).filter(Boolean);
 }
 
+// ─── Feature Taxonomy ───────────────────────────────────────────────────────
+
+export interface FeatureCategoryInfo {
+  category: string;
+  slug: string;
+  featureCount: number;
+  productCount: number;
+}
+
+export async function getFeatureTaxonomy(): Promise<FeatureCategoryInfo[]> {
+  const { data, error } = await supabase
+    .from('reaper_features')
+    .select('category, product_id')
+    .not('category', 'is', null);
+
+  if (error || !data) return [];
+
+  const categories: Record<string, { featureCount: number; productIds: Record<string, boolean> }> = {};
+  for (const row of data) {
+    const cat = row.category as string;
+    if (!categories[cat]) categories[cat] = { featureCount: 0, productIds: {} };
+    categories[cat].featureCount++;
+    categories[cat].productIds[row.product_id] = true;
+  }
+
+  return Object.entries(categories)
+    .map(([category, info]) => ({
+      category,
+      slug: slugifyCategory(category),
+      featureCount: info.featureCount,
+      productCount: Object.keys(info.productIds).length,
+    }))
+    .sort((a, b) => b.productCount - a.productCount);
+}
+
+export async function getProductsByFeatureTaxonomy(
+  featureCategory: string,
+  limit: number = 50
+): Promise<Product[]> {
+  const { data: featureRows, error: fErr } = await supabase
+    .from('reaper_features')
+    .select('product_id')
+    .eq('category', featureCategory)
+    .limit(200);
+
+  if (fErr || !featureRows || featureRows.length === 0) return [];
+
+  const productIds = Array.from(
+    new Set(featureRows.map((r) => r.product_id))
+  ).slice(0, limit);
+
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .in('id', productIds)
+    .order('quality_score', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return (data ?? []) as Product[];
+}
+
+// ─── Pricing Overview ───────────────────────────────────────────────────────
+
+export interface PricingOverview {
+  product: Product;
+  minPrice: number | null;
+  hasFreeTier: boolean;
+}
+
+export async function getProductsWithPricing(): Promise<PricingOverview[]> {
+  const { data: products, error: pErr } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .order('quality_score', { ascending: false });
+
+  if (pErr || !products) return [];
+
+  const { data: tiers, error: tErr } = await supabase
+    .from('reaper_pricing_tiers')
+    .select('product_id, price_monthly, price_label');
+
+  if (tErr || !tiers) return [];
+
+  const pricingMap: Record<string, { minPrice: number | null; hasFreeTier: boolean }> = {};
+  for (const tier of tiers) {
+    if (!pricingMap[tier.product_id]) {
+      pricingMap[tier.product_id] = { minPrice: null, hasFreeTier: false };
+    }
+    const entry = pricingMap[tier.product_id];
+
+    if (tier.price_monthly === 0 || tier.price_label?.toLowerCase().includes('free')) {
+      entry.hasFreeTier = true;
+    }
+
+    if (tier.price_monthly != null && tier.price_monthly > 0) {
+      if (entry.minPrice === null || tier.price_monthly < entry.minPrice) {
+        entry.minPrice = tier.price_monthly;
+      }
+    }
+  }
+
+  return products.map((p) => ({
+    product: p as Product,
+    minPrice: pricingMap[p.id]?.minPrice ?? null,
+    hasFreeTier: pricingMap[p.id]?.hasFreeTier ?? false,
+  }));
+}
+
+// ─── Top Product Slugs (for generateStaticParams) ───────────────────────────
+
+export async function getTopProductSlugs(limit: number = 100): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('slug')
+    .eq('is_active', true)
+    .not('slug', 'is', null)
+    .order('quality_score', { ascending: false })
+    .limit(limit);
+
+  if (error || !data) return [];
+  return data.map((r) => r.slug).filter(Boolean);
+}
+
 // ─── Integration cross-linking ──────────────────────────────────────────────
 
 export async function getProductSlugMap(

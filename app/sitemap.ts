@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
+import { slugifyCategory } from '@/lib/data';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://saasipedia.com';
@@ -22,6 +23,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     new Set((categoryRows ?? []).map((r) => r.category as string))
   );
 
+  // Fetch distinct feature categories
+  const { data: featureCatRows } = await supabase
+    .from('reaper_features')
+    .select('category')
+    .not('category', 'is', null);
+
+  const uniqueFeatureCategories = Array.from(
+    new Set((featureCatRows ?? []).map((r) => r.category as string))
+  );
+
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -35,6 +46,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/pricing`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
     },
   ];
 
@@ -51,18 +80,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Category pages
-  const slugify = (cat: string) =>
-    cat
-      .toLowerCase()
-      .replace(/[&]/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
   const categoryPages: MetadataRoute.Sitemap = uniqueCategories.map((cat) => ({
-    url: `${baseUrl}/category/${slugify(cat)}`,
+    url: `${baseUrl}/category/${slugifyCategory(cat)}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
+  }));
+
+  // Feature taxonomy pages
+  const featurePages: MetadataRoute.Sitemap = uniqueFeatureCategories.map((cat) => ({
+    url: `${baseUrl}/features/${slugifyCategory(cat)}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
   }));
 
   // Alternatives pages (one per product)
@@ -85,6 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...productPages,
     ...categoryPages,
+    ...featurePages,
     ...alternativesPages,
     ...integrationsPages,
   ];

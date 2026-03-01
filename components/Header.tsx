@@ -32,6 +32,18 @@ export default function Header() {
             >
               Categories
             </Link>
+            <Link
+              href="/features"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              Pricing
+            </Link>
           </nav>
 
           {/* Mobile menu toggle */}
@@ -57,6 +69,27 @@ export default function Header() {
                 className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
               >
                 Categories
+              </Link>
+              <Link
+                href="/features"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Features
+              </Link>
+              <Link
+                href="/pricing"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                About
               </Link>
             </nav>
           </div>
