@@ -12,12 +12,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/wiki/${product.slug}`} className="wiki-card group block">
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="text-base font-semibold text-wiki-text group-hover:text-wiki-accent transition-colors">
+      <div className="flex items-start justify-between mb-2 min-w-0">
+        <h3 className="text-base font-semibold text-wiki-text group-hover:text-wiki-accent transition-colors min-w-0">
           {product.name}
         </h3>
         {product.category && (
-          <span className="wiki-badge ml-2 shrink-0">
+          <span className="wiki-badge ml-2 truncate max-w-[50%]">
             {product.category}
           </span>
         )}
