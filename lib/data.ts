@@ -696,3 +696,33 @@ export async function getProductSlugMap(
 
   return map;
 }
+
+// ─── Products by Multiple Categories (for industry pages) ────────────────────
+
+export async function getProductsByCategories(
+  categoryNames: string[],
+  limitPerCategory: number = 3
+): Promise<Record<string, Product[]>> {
+  if (categoryNames.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from('reaper_products')
+    .select('*')
+    .eq('is_active', true)
+    .in('category', categoryNames)
+    .order('quality_score', { ascending: false });
+
+  if (error || !data) return {};
+
+  const result: Record<string, Product[]> = {};
+  for (const product of data as Product[]) {
+    const cat = product.category;
+    if (!cat) continue;
+    if (!result[cat]) result[cat] = [];
+    if (result[cat].length < limitPerCategory) {
+      result[cat].push(product);
+    }
+  }
+
+  return result;
+}

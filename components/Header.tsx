@@ -27,6 +27,12 @@ export default function Header() {
           {/* Nav — desktop */}
           <nav className="hidden sm:flex items-center gap-5 text-sm shrink-0">
             <Link
+              href="/#industries"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              Industries
+            </Link>
+            <Link
               href="/categories"
               className="text-wiki-text-muted hover:text-wiki-text transition-colors"
             >
@@ -63,6 +69,13 @@ export default function Header() {
               <SearchBar size="sm" placeholder="Search products..." />
             </div>
             <nav className="flex flex-col gap-1">
+              <Link
+                href="/#industries"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Industries
+              </Link>
               <Link
                 href="/categories"
                 onClick={() => setMobileOpen(false)}
