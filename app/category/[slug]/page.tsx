@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ArrowLeft } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import {
   getCategories,
@@ -9,11 +9,13 @@ import {
   deslugifyCategory,
   slugifyCategory,
 } from '@/lib/data';
+import { getIndustryBySlug } from '@/lib/industries';
 
 export const revalidate = 3600;
 
 interface PageProps {
   params: { slug: string };
+  searchParams: { industry?: string; type?: string };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -34,13 +36,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({ params, searchParams }: PageProps) {
   const categories = await getCategories();
   const match = categories.find((c) => c.slug === params.slug);
 
   // Try exact match first, then deslugify
   const categoryName = match?.category || deslugifyCategory(params.slug);
   const products = await getCategoryProducts(categoryName);
+
+  // Resolve industry context from query params
+  const industry = searchParams.industry
+    ? getIndustryBySlug(searchParams.industry)
+    : undefined;
+  const businessType = industry && searchParams.type
+    ? industry.businessTypes.find((bt) => bt.slug === searchParams.type)
+    : undefined;
 
   // If no match found and deslugified also returned nothing, try case-insensitive
   if (products.length === 0 && !match) {
@@ -50,21 +60,23 @@ export default async function CategoryPage({ params }: PageProps) {
         const catProducts = await getCategoryProducts(cat.category);
         if (catProducts.length > 0) {
           // Redirect would be ideal, but we'll just render
-          return renderCategoryPage(cat.category, catProducts, categories, params.slug);
+          return renderCategoryPage(cat.category, catProducts, categories, params.slug, industry, businessType);
         }
       }
     }
     notFound();
   }
 
-  return renderCategoryPage(categoryName, products, categories, params.slug);
+  return renderCategoryPage(categoryName, products, categories, params.slug, industry, businessType);
 }
 
 function renderCategoryPage(
   categoryName: string,
   products: import('@/lib/data').Product[],
   allCategories: import('@/lib/data').CategoryInfo[],
-  slug: string
+  slug: string,
+  industry?: import('@/lib/industries').Industry,
+  businessType?: import('@/lib/industries').BusinessType,
 ) {
   const relatedCategories = allCategories
     .filter((c) => c.category !== categoryName)
@@ -111,10 +123,27 @@ function renderCategoryPage(
         <span className="text-wiki-text">{categoryName}</span>
       </nav>
 
+      {/* Industry context banner */}
+      {industry && (
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+          <Link
+            href={`/industry/${industry.slug}${businessType ? `?type=${businessType.slug}` : ''}`}
+            className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:text-blue-900 transition-colors shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to {industry.name}
+          </Link>
+          <span className="text-sm text-blue-600">
+            Browsing {categoryName} software recommended for{' '}
+            <strong>{businessType ? businessType.name : industry.name}</strong> businesses
+          </span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-wiki-text mb-2">
-          {categoryName} Software
+          {categoryName} Software{industry ? ` for ${industry.name}` : ''}
         </h1>
         <p className="text-wiki-text-muted">
           {products.length} {products.length === 1 ? 'product' : 'products'} in this category, sorted by data quality.

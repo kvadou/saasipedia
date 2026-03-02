@@ -98,7 +98,7 @@ export default function IndustryCategoryCard({
       {/* Footer links */}
       <div className="flex items-center justify-between pt-3 border-t border-wiki-border text-xs">
         <Link
-          href={`/category/${categorySlug}`}
+          href={`/category/${categorySlug}?industry=${industrySlug}${businessTypeSlug ? `&type=${businessTypeSlug}` : ''}`}
           className="inline-flex items-center gap-1 text-wiki-accent hover:underline"
         >
           View all
