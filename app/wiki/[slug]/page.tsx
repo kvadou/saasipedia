@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronRight, ExternalLink, Tag, Sparkles, Crown } from 'lucide-react';
+import { ChevronRight, ExternalLink, Tag, Sparkles, Crown, Hammer, ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import MobileToc from '@/components/MobileToc';
 import CostCalculator from '@/components/CostCalculator';
@@ -242,6 +242,16 @@ export default async function ProductPage({ params }: PageProps) {
             {product.tagline && (
               <p className="text-lg text-wiki-text-muted mt-2">{product.tagline}</p>
             )}
+
+            <Link
+              href={`/wiki/${product.slug}/replace`}
+              className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-lg border border-wiki-accent
+                text-wiki-accent text-sm font-medium hover:bg-blue-50 transition-colors"
+            >
+              <Hammer className="w-4 h-4" />
+              How to Replace {product.name}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {/* Overview */}
@@ -535,6 +545,12 @@ export default async function ProductPage({ params }: PageProps) {
                   <ExternalLink className="w-3 h-3" />
                 </a>
               )}
+              <Link
+                href={`/wiki/${product.slug}/replace`}
+                className="block text-xs wiki-link font-medium"
+              >
+                Replacement guide
+              </Link>
               <Link
                 href={`/alternatives/${product.slug}`}
                 className="block text-xs wiki-link"
