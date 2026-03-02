@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronRight, ExternalLink, Tag, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import { ChevronRight, ExternalLink, Tag, Sparkles, Crown } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import MobileToc from '@/components/MobileToc';
 import CostCalculator from '@/components/CostCalculator';
 import BuildScore from '@/components/BuildScore';
+import ShipYardCTA from '@/components/ShipYardCTA';
 import {
   getProductBySlug,
   getRelatedProducts,
@@ -104,6 +105,7 @@ export default async function ProductPage({ params }: PageProps) {
       });
     }
   }
+  tocSections.push({ id: 'shipyard', label: 'Build Your Own' });
   if (product.pricing_tiers.length > 0) {
     tocSections.push({ id: 'pricing', label: 'Pricing' });
   }
@@ -338,6 +340,9 @@ export default async function ProductPage({ params }: PageProps) {
             </section>
           )}
 
+          {/* ShipYard CTA */}
+          <ShipYardCTA productSlug={product.slug} productName={product.name} />
+
           {/* Pricing */}
           {product.pricing_tiers.length > 0 && (
             <section id="pricing" className="wiki-section">
@@ -467,22 +472,6 @@ export default async function ProductPage({ params }: PageProps) {
             </section>
           )}
 
-          {/* Reap CTA */}
-          <div className="mt-12 p-6 rounded-lg bg-wiki-bg-alt border border-wiki-border text-center">
-            <p className="text-wiki-text-muted mb-3">
-              Want to build your own {product.name}?
-            </p>
-            <a
-              href={`https://reaplabs.ai/?q=${encodeURIComponent(product.slug)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-wiki-accent text-white
-                font-medium text-sm hover:bg-wiki-accent-hover transition-colors"
-            >
-              Analyze it with Reap
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
         </article>
 
         {/* Sidebar — Table of Contents */}
