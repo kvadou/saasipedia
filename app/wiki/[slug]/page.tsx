@@ -4,12 +4,15 @@ import type { Metadata } from 'next';
 import { ChevronRight, ExternalLink, Tag, Sparkles, Crown, ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import MobileToc from '@/components/MobileToc';
+import CostCalculator from '@/components/CostCalculator';
+import BuildScore from '@/components/BuildScore';
 import {
   getProductBySlug,
   getRelatedProducts,
   getProductsWithFeatureCategory,
   getProductSlugMap,
   getTopProductSlugs,
+  calculateBuildScore,
   slugifyCategory,
   type Feature,
   type Product,
@@ -64,6 +67,7 @@ export default async function ProductPage({ params }: PageProps) {
 
   const featureGroups = groupFeatures(product.features);
   const featureCategoryNames = Object.keys(featureGroups).sort();
+  const buildScore = calculateBuildScore(product);
 
   // Fetch related products and integration slug map in parallel
   const integrationNames = product.integrations.map((i) => i.name);
@@ -103,6 +107,7 @@ export default async function ProductPage({ params }: PageProps) {
   if (product.pricing_tiers.length > 0) {
     tocSections.push({ id: 'pricing', label: 'Pricing' });
   }
+  tocSections.push({ id: 'cost-calculator', label: 'Cost Calculator' });
   if (product.integrations.length > 0) {
     tocSections.push({ id: 'integrations', label: 'Integrations' });
   }
@@ -220,14 +225,17 @@ export default async function ProductPage({ params }: PageProps) {
               </a>
             )}
 
-            {product.category && (
-              <Link
-                href={`/category/${slugifyCategory(product.category)}`}
-                className="wiki-badge mb-2 inline-block"
-              >
-                {product.category}
-              </Link>
-            )}
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              {product.category && (
+                <Link
+                  href={`/category/${slugifyCategory(product.category)}`}
+                  className="wiki-badge inline-block"
+                >
+                  {product.category}
+                </Link>
+              )}
+              <BuildScore buildScore={buildScore} />
+            </div>
 
             {product.tagline && (
               <p className="text-lg text-wiki-text-muted mt-2">{product.tagline}</p>
@@ -395,6 +403,15 @@ export default async function ProductPage({ params }: PageProps) {
               </div>
             </section>
           )}
+
+          {/* Cost Calculator */}
+          <CostCalculator
+            productName={product.name}
+            featureCount={product.features.length}
+            buildScore={buildScore.score}
+            lowestPaidPrice={lowestPrice ?? null}
+            productSlug={product.slug}
+          />
 
           {/* Integrations */}
           {product.integrations.length > 0 && (

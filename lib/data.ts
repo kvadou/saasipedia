@@ -78,6 +78,55 @@ export function deslugifyCategory(slug: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// ─── Build Score ────────────────────────────────────────────────────────────
+
+export interface BuildScoreResult {
+  score: number;
+  label: string;
+  color: string;
+  description: string;
+}
+
+export function calculateBuildScore(product: {
+  features?: any[];
+  pricing_tiers?: any[];
+  integrations?: any[];
+  category?: string | null;
+}): BuildScoreResult {
+  const featureCount = product.features?.length || 0;
+  const integrationCount = product.integrations?.length || 0;
+
+  let score = 5; // Start at easiest
+
+  // Feature complexity
+  if (featureCount > 100) score -= 2;
+  else if (featureCount > 60) score -= 1;
+
+  // Integration complexity
+  if (integrationCount > 50) score -= 1;
+  else if (integrationCount > 25) score -= 0.5;
+
+  // Category complexity
+  const hardCategories = ['erp', 'accounting', 'security', 'infrastructure', 'database'];
+  const mediumCategories = ['crm', 'hr', 'marketing-automation', 'ecommerce'];
+  const cat = product.category?.toLowerCase() || '';
+  if (hardCategories.includes(cat)) score -= 1;
+  else if (mediumCategories.includes(cat)) score -= 0.5;
+
+  // Clamp to 1-5
+  score = Math.max(1, Math.min(5, Math.round(score)));
+
+  const labels: Record<number, { label: string; color: string; description: string }> = {
+    5: { label: 'Weekend Project', color: 'emerald', description: 'Build a working replacement in a weekend with AI tools' },
+    4: { label: 'Few Days', color: 'teal', description: 'A few focused days to build a solid replacement' },
+    3: { label: '1-2 Weeks', color: 'amber', description: 'Plan for 1-2 weeks of building with AI assistance' },
+    2: { label: 'Multi-Week', color: 'orange', description: 'A multi-week project requiring careful planning' },
+    1: { label: 'Major Project', color: 'red', description: 'A significant undertaking — consider phased approach' },
+  };
+
+  return { score, ...labels[score] };
+}
+
 // ─── Product Queries ────────────────────────────────────────────────────────
 
 export async function getProductBySlug(
