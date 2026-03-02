@@ -56,6 +56,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal (shown for "All")
       {
         category: 'CRM',
         relevance: 'essential',
@@ -73,30 +74,16 @@ export const INDUSTRIES: Industry[] = [
           'Handle billing, insurance claims, and financial reporting',
       },
       {
-        category: 'Marketing Automation',
+        category: 'Payment Processing',
         relevance: 'recommended',
-        reason: 'Attract new patients with automated campaigns',
-      },
-      {
-        category: 'Email Marketing',
-        relevance: 'recommended',
-        reason: 'Send appointment reminders and health tips',
-      },
-      {
-        category: 'Website Builder',
-        relevance: 'recommended',
-        reason: 'Build your practice website with online booking',
+        reason: 'Process co-pays and patient payments seamlessly',
       },
       {
         category: 'Cybersecurity',
         relevance: 'recommended',
         reason: 'Protect sensitive patient data and meet HIPAA requirements',
       },
-      {
-        category: 'Customer Support',
-        relevance: 'nice-to-have',
-        reason: 'Manage patient inquiries across channels',
-      },
+      // Business-type-specific
       {
         category: 'Healthcare IT',
         relevance: 'essential',
@@ -108,9 +95,46 @@ export const INDUSTRIES: Industry[] = [
         ],
       },
       {
-        category: 'Payment Processing',
+        category: 'Marketing Automation',
+        relevance: 'essential',
+        reason: 'Drive new patient inquiries for high-value cosmetic procedures',
+        businessTypes: ['plastic-surgery-clinic'],
+      },
+      {
+        category: 'Marketing Automation',
         relevance: 'recommended',
-        reason: 'Process co-pays and patient payments seamlessly',
+        reason: 'Attract new patients with automated campaigns',
+        businessTypes: ['dental-office', 'veterinary'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason: 'Showcase before/after galleries and attract new patients online',
+        businessTypes: ['plastic-surgery-clinic'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'recommended',
+        reason: 'Build your practice website with online booking',
+        businessTypes: ['dental-office', 'physical-therapy', 'veterinary'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'recommended',
+        reason: 'Send appointment reminders, hygiene tips, and recall notices',
+        businessTypes: ['dental-office', 'veterinary'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'nice-to-have',
+        reason: 'Send post-procedure care instructions and promotions',
+        businessTypes: ['plastic-surgery-clinic', 'physical-therapy'],
+      },
+      {
+        category: 'Customer Support',
+        relevance: 'nice-to-have',
+        reason: 'Manage patient inquiries across phone, email, and chat',
+        businessTypes: ['dental-office', 'plastic-surgery-clinic'],
       },
     ],
   },
@@ -148,6 +172,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'CRM',
         relevance: 'essential',
@@ -171,6 +196,7 @@ export const INDUSTRIES: Industry[] = [
         reason:
           'Organize contracts, statements, and compliance documents',
       },
+      // Business-type-specific
       {
         category: 'Financial Management',
         relevance: 'essential',
@@ -179,35 +205,52 @@ export const INDUSTRIES: Industry[] = [
       },
       {
         category: 'Marketing Automation',
+        relevance: 'essential',
+        reason: 'Generate leads and nurture prospects through multi-touch campaigns',
+        businessTypes: ['insurance-agency', 'mortgage-broker'],
+      },
+      {
+        category: 'Marketing Automation',
         relevance: 'recommended',
         reason: 'Nurture prospects and cross-sell to existing clients',
+        businessTypes: ['financial-advisor'],
       },
       {
         category: 'Email Marketing',
         relevance: 'recommended',
         reason:
           'Send market updates, newsletters, and regulatory notices',
+        businessTypes: ['financial-advisor', 'insurance-agency'],
       },
       {
         category: 'Website Builder',
         relevance: 'recommended',
         reason: 'Build a professional web presence with client portals',
+        businessTypes: ['financial-advisor', 'mortgage-broker'],
       },
       {
         category: 'Business Intelligence',
         relevance: 'recommended',
         reason: 'Analyze portfolio performance and business metrics',
+        businessTypes: ['financial-advisor', 'accounting-firm'],
       },
       {
         category: 'Expense Management',
-        relevance: 'nice-to-have',
+        relevance: 'essential',
         reason: 'Track business expenses and client-billable costs',
         businessTypes: ['accounting-firm'],
       },
       {
         category: 'Scheduling & Booking',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason: 'Let clients self-schedule consultations and reviews',
+        businessTypes: ['financial-advisor', 'mortgage-broker'],
+      },
+      {
+        category: 'Invoicing & Billing',
+        relevance: 'recommended',
+        reason: 'Bill clients for advisory and preparation services',
+        businessTypes: ['accounting-firm'],
       },
     ],
   },
@@ -240,6 +283,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Legal Tech',
         relevance: 'essential',
@@ -269,6 +313,7 @@ export const INDUSTRIES: Industry[] = [
         reason:
           'Handle trust accounting, billing, and financial compliance',
       },
+      // Business-type-specific
       {
         category: 'Time Tracking & Productivity',
         relevance: 'essential',
@@ -277,25 +322,48 @@ export const INDUSTRIES: Industry[] = [
       },
       {
         category: 'Website Builder',
+        relevance: 'essential',
+        reason:
+          'Build your personal brand and attract clients online',
+        businessTypes: ['solo-attorney'],
+      },
+      {
+        category: 'Website Builder',
         relevance: 'recommended',
         reason:
           'Build a credible web presence to attract potential clients',
-      },
-      {
-        category: 'Email Marketing',
-        relevance: 'nice-to-have',
-        reason: 'Send legal updates and firm newsletters',
+        businessTypes: ['law-firm'],
       },
       {
         category: 'Cybersecurity',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Protect attorney-client privileged communications and data',
+        businessTypes: ['law-firm', 'legal-services'],
+      },
+      {
+        category: 'Scheduling & Booking',
+        relevance: 'essential',
+        reason: 'Let clients book consultations directly online',
+        businessTypes: ['solo-attorney'],
       },
       {
         category: 'Scheduling & Booking',
         relevance: 'nice-to-have',
         reason: 'Allow clients to book consultations online',
+        businessTypes: ['law-firm'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'recommended',
+        reason: 'Send firm newsletters, legal updates, and thought leadership',
+        businessTypes: ['law-firm'],
+      },
+      {
+        category: 'Project Management',
+        relevance: 'recommended',
+        reason: 'Coordinate paralegal teams and manage client deliverables',
+        businessTypes: ['legal-services'],
       },
     ],
   },
@@ -333,39 +401,12 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'CRM',
         relevance: 'essential',
         reason:
           'Track leads, buyers, sellers, and deal pipeline from first contact to close',
-      },
-      {
-        category: 'Marketing Automation',
-        relevance: 'essential',
-        reason:
-          'Automate listing alerts, drip campaigns, and lead nurture sequences',
-      },
-      {
-        category: 'Website Builder',
-        relevance: 'essential',
-        reason: 'Showcase listings and capture leads with IDX integration',
-      },
-      {
-        category: 'Email Marketing',
-        relevance: 'recommended',
-        reason: 'Send market updates, open house invites, and just-listed emails',
-      },
-      {
-        category: 'Social Media Management',
-        relevance: 'recommended',
-        reason: 'Promote listings across Instagram, Facebook, and more',
-      },
-      {
-        category: 'Property Management',
-        relevance: 'essential',
-        reason:
-          'Manage tenants, leases, maintenance, and rent collection',
-        businessTypes: ['property-manager', 'real-estate-investor'],
       },
       {
         category: 'Accounting Software',
@@ -378,10 +419,62 @@ export const INDUSTRIES: Industry[] = [
         reason:
           'Handle contracts, disclosures, and transaction documents',
       },
+      // Business-type-specific
+      {
+        category: 'Marketing Automation',
+        relevance: 'essential',
+        reason:
+          'Automate listing alerts, drip campaigns, and lead nurture sequences',
+        businessTypes: ['real-estate-agent', 'brokerage'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason: 'Showcase listings and capture leads with IDX integration',
+        businessTypes: ['real-estate-agent', 'brokerage'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'recommended',
+        reason: 'Send market updates, open house invites, and just-listed emails',
+        businessTypes: ['real-estate-agent', 'brokerage'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'essential',
+        reason: 'Promote listings across Instagram, Facebook, and more',
+        businessTypes: ['real-estate-agent'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'recommended',
+        reason: 'Build brokerage brand and recruit agents',
+        businessTypes: ['brokerage'],
+      },
+      {
+        category: 'Property Management',
+        relevance: 'essential',
+        reason:
+          'Manage tenants, leases, maintenance, and rent collection',
+        businessTypes: ['property-manager', 'real-estate-investor'],
+      },
       {
         category: 'Scheduling & Booking',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason: 'Schedule showings and open houses efficiently',
+        businessTypes: ['real-estate-agent', 'brokerage'],
+      },
+      {
+        category: 'Financial Management',
+        relevance: 'essential',
+        reason: 'Track ROI, cap rates, and portfolio performance across properties',
+        businessTypes: ['real-estate-investor'],
+      },
+      {
+        category: 'Accounting Software',
+        relevance: 'essential',
+        reason: 'Track rental income, expenses, depreciation, and tax obligations',
+        businessTypes: ['real-estate-investor', 'property-manager'],
       },
     ],
   },
@@ -423,6 +516,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Point of Sale',
         relevance: 'essential',
@@ -435,56 +529,100 @@ export const INDUSTRIES: Industry[] = [
         reason: 'Track revenue, food costs, payroll, and profitability',
       },
       {
+        category: 'Payment Processing',
+        relevance: 'essential',
+        reason: 'Accept cards, mobile pay, and process tips seamlessly',
+      },
+      // Business-type-specific
+      {
         category: 'Inventory Management',
         relevance: 'essential',
         reason:
           'Monitor food and beverage stock to reduce waste and control costs',
+        businessTypes: ['restaurant', 'bar-nightlife', 'catering'],
       },
       {
         category: 'Scheduling & Booking',
         relevance: 'essential',
-        reason: 'Manage reservations and staff scheduling',
+        reason: 'Manage reservations, table assignments, and waitlists',
+        businessTypes: ['restaurant'],
+      },
+      {
+        category: 'Scheduling & Booking',
+        relevance: 'essential',
+        reason: 'Handle room reservations and guest check-in/check-out',
+        businessTypes: ['hotel'],
+      },
+      {
+        category: 'Scheduling & Booking',
+        relevance: 'recommended',
+        reason: 'Manage event bookings and delivery schedules',
+        businessTypes: ['catering'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'essential',
+        reason:
+          'Promote specials, share food photos, and build a loyal following',
+        businessTypes: ['restaurant', 'coffee-shop'],
       },
       {
         category: 'Social Media Management',
         relevance: 'recommended',
         reason:
-          'Promote specials, events, and build a loyal following',
+          'Promote events, drink specials, and live entertainment',
+        businessTypes: ['bar-nightlife'],
       },
       {
         category: 'Email Marketing',
         relevance: 'recommended',
         reason:
           'Send promotions, loyalty rewards, and event announcements',
+        businessTypes: ['restaurant', 'bar-nightlife', 'hotel'],
       },
       {
         category: 'Website Builder',
         relevance: 'recommended',
         reason:
           'Display menus, hours, and enable online ordering',
+        businessTypes: ['restaurant', 'coffee-shop', 'catering'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason: 'Showcase rooms, amenities, and enable direct bookings',
+        businessTypes: ['hotel'],
       },
       {
         category: 'HR & Payroll',
         relevance: 'recommended',
         reason:
           'Manage tipped employees, shift workers, and payroll compliance',
+        businessTypes: ['restaurant', 'hotel', 'bar-nightlife'],
       },
       {
-        category: 'Payment Processing',
+        category: 'Event Management',
         relevance: 'essential',
-        reason: 'Accept cards, mobile pay, and process tips seamlessly',
+        reason: 'Coordinate event logistics, menus, and client communication',
+        businessTypes: ['catering'],
       },
       {
         category: 'Event Management',
         relevance: 'nice-to-have',
         reason: 'Coordinate private events and banquet bookings',
-        businessTypes: ['restaurant', 'hotel', 'catering'],
+        businessTypes: ['restaurant', 'hotel'],
       },
       {
         category: 'Property Management',
         relevance: 'essential',
         reason: 'Manage rooms, housekeeping, and guest services',
         businessTypes: ['hotel'],
+      },
+      {
+        category: 'CRM',
+        relevance: 'recommended',
+        reason: 'Track corporate clients, repeat caterers, and referral sources',
+        businessTypes: ['catering', 'hotel'],
       },
     ],
   },
@@ -523,11 +661,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
-      {
-        category: 'E-commerce',
-        relevance: 'essential',
-        reason: 'Build and manage your online storefront and product catalog',
-      },
+      // Universal
       {
         category: 'Inventory Management',
         relevance: 'essential',
@@ -545,35 +679,71 @@ export const INDUSTRIES: Industry[] = [
           'Track customer purchase history and segment for targeted outreach',
       },
       {
+        category: 'Accounting Software',
+        relevance: 'recommended',
+        reason: 'Manage sales tax, revenue tracking, and financial reporting',
+      },
+      // Business-type-specific
+      {
+        category: 'E-commerce',
+        relevance: 'essential',
+        reason: 'Build and manage your online storefront and product catalog',
+        businessTypes: ['online-store', 'omnichannel-retailer', 'subscription-box'],
+      },
+      {
         category: 'Marketing Automation',
         relevance: 'essential',
         reason:
           'Automate abandoned cart emails, upsells, and re-engagement flows',
+        businessTypes: ['online-store', 'omnichannel-retailer', 'subscription-box'],
+      },
+      {
+        category: 'Marketing Automation',
+        relevance: 'recommended',
+        reason: 'Send targeted promotions based on purchase history',
+        businessTypes: ['brick-and-mortar'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'essential',
+        reason: 'Drive repeat purchases with product launches and subscriber-only deals',
+        businessTypes: ['subscription-box'],
       },
       {
         category: 'Email Marketing',
         relevance: 'recommended',
         reason: 'Send promotions, product launches, and loyalty campaigns',
+        businessTypes: ['online-store', 'omnichannel-retailer'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'essential',
+        reason: 'Build brand, show unboxing content, and drive subscriber growth',
+        businessTypes: ['subscription-box'],
       },
       {
         category: 'Social Media Management',
         relevance: 'recommended',
         reason: 'Promote products and engage customers on social channels',
+        businessTypes: ['online-store', 'omnichannel-retailer'],
       },
       {
         category: 'SEO',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason: 'Drive organic traffic to product pages and category listings',
+        businessTypes: ['online-store', 'omnichannel-retailer'],
       },
       {
-        category: 'Accounting Software',
-        relevance: 'recommended',
-        reason: 'Manage sales tax, revenue tracking, and financial reporting',
+        category: 'Customer Support',
+        relevance: 'essential',
+        reason: 'Handle returns, order inquiries, and post-purchase support',
+        businessTypes: ['online-store', 'subscription-box'],
       },
       {
         category: 'Customer Support',
         relevance: 'recommended',
-        reason: 'Handle returns, order inquiries, and post-purchase support',
+        reason: 'Manage customer inquiries and product questions',
+        businessTypes: ['omnichannel-retailer'],
       },
       {
         category: 'Point of Sale',
@@ -583,7 +753,7 @@ export const INDUSTRIES: Industry[] = [
       },
       {
         category: 'Logistics & Shipping',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason: 'Manage fulfillment, shipping rates, and delivery tracking',
         businessTypes: ['online-store', 'omnichannel-retailer', 'subscription-box'],
       },
@@ -624,6 +794,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Project Management',
         relevance: 'essential',
@@ -648,11 +819,13 @@ export const INDUSTRIES: Industry[] = [
         reason:
           'Handle invoicing, expense tracking, and financial reporting',
       },
+      // Business-type-specific
       {
         category: 'Team Collaboration',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Coordinate across team members and share work with clients',
+        businessTypes: ['marketing-agency', 'consulting-firm', 'it-services'],
       },
       {
         category: 'Invoicing & Billing',
@@ -664,22 +837,30 @@ export const INDUSTRIES: Industry[] = [
         category: 'Marketing Automation',
         relevance: 'recommended',
         reason: 'Generate leads and nurture prospects through the sales funnel',
+        businessTypes: ['marketing-agency', 'consulting-firm'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason: 'Showcase your portfolio and attract new clients online',
+        businessTypes: ['freelancer'],
       },
       {
         category: 'Website Builder',
         relevance: 'recommended',
         reason:
           'Showcase your portfolio, case studies, and service offerings',
+        businessTypes: ['marketing-agency', 'consulting-firm'],
       },
       {
         category: 'Social Media Management',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason: 'Manage client social accounts and your own brand presence',
         businessTypes: ['marketing-agency'],
       },
       {
         category: 'Design & Prototyping',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason: 'Create deliverables, mockups, and client presentations',
         businessTypes: ['marketing-agency'],
       },
@@ -688,6 +869,18 @@ export const INDUSTRIES: Industry[] = [
         relevance: 'essential',
         reason: 'Track tickets, SLAs, and service delivery for clients',
         businessTypes: ['it-services'],
+      },
+      {
+        category: 'Cybersecurity',
+        relevance: 'essential',
+        reason: 'Protect client environments and manage security posture',
+        businessTypes: ['it-services'],
+      },
+      {
+        category: 'Scheduling & Booking',
+        relevance: 'recommended',
+        reason: 'Let clients self-book consultation calls',
+        businessTypes: ['freelancer', 'consulting-firm'],
       },
     ],
   },
@@ -727,17 +920,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
-      {
-        category: 'Construction Management Software',
-        relevance: 'essential',
-        reason:
-          'Manage bids, plans, schedules, and subcontractors in one place',
-      },
-      {
-        category: 'Construction Management',
-        relevance: 'essential',
-        reason: 'Coordinate job sites, crews, and project timelines',
-      },
+      // Universal
       {
         category: 'Project Management',
         relevance: 'essential',
@@ -757,6 +940,25 @@ export const INDUSTRIES: Industry[] = [
           'Track leads, bids, and client relationships from estimate to close',
       },
       {
+        category: 'Invoicing & Billing',
+        relevance: 'recommended',
+        reason: 'Send estimates, change orders, and progress invoices',
+      },
+      // Business-type-specific
+      {
+        category: 'Construction Management Software',
+        relevance: 'essential',
+        reason:
+          'Manage bids, blueprints, schedules, and subcontractor coordination',
+        businessTypes: ['general-contractor', 'commercial-builder'],
+      },
+      {
+        category: 'Construction Management',
+        relevance: 'essential',
+        reason: 'Coordinate job sites, crews, and project timelines',
+        businessTypes: ['general-contractor', 'commercial-builder'],
+      },
+      {
         category: 'Field Service Management',
         relevance: 'essential',
         reason: 'Dispatch crews, track job status, and manage work orders',
@@ -764,26 +966,49 @@ export const INDUSTRIES: Industry[] = [
       },
       {
         category: 'Scheduling & Booking',
-        relevance: 'recommended',
-        reason:
-          'Coordinate crew schedules and client appointments',
+        relevance: 'essential',
+        reason: 'Let homeowners book estimates and service calls online',
+        businessTypes: ['specialty-trade', 'remodeler'],
       },
       {
-        category: 'Invoicing & Billing',
+        category: 'Scheduling & Booking',
         relevance: 'recommended',
-        reason: 'Send estimates, change orders, and progress invoices',
+        reason:
+          'Coordinate crew schedules across multiple job sites',
+        businessTypes: ['general-contractor', 'commercial-builder'],
+      },
+      {
+        category: 'Time Tracking & Productivity',
+        relevance: 'essential',
+        reason:
+          'Track labor hours per job for payroll and cost analysis',
+        businessTypes: ['commercial-builder', 'general-contractor'],
       },
       {
         category: 'Time Tracking & Productivity',
         relevance: 'recommended',
+        reason: 'Track hours per job for accurate invoicing',
+        businessTypes: ['specialty-trade'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
         reason:
-          'Track labor hours per job for payroll and cost analysis',
+          'Showcase before/after project galleries and collect leads online',
+        businessTypes: ['remodeler'],
       },
       {
         category: 'Website Builder',
         relevance: 'nice-to-have',
         reason:
-          'Showcase past projects and collect leads online',
+          'Build an online presence to attract new clients',
+        businessTypes: ['specialty-trade', 'general-contractor'],
+      },
+      {
+        category: 'HR & Payroll',
+        relevance: 'essential',
+        reason: 'Manage large crews, prevailing wages, and union compliance',
+        businessTypes: ['commercial-builder'],
       },
     ],
   },
@@ -822,6 +1047,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Learning Management System',
         relevance: 'essential',
@@ -835,48 +1061,78 @@ export const INDUSTRIES: Industry[] = [
           'Track student enrollment pipeline and parent/student relationships',
       },
       {
-        category: 'Scheduling & Booking',
-        relevance: 'essential',
-        reason: 'Schedule classes, sessions, and tutor availability',
-        businessTypes: ['tutoring-service'],
-      },
-      {
-        category: 'Email Marketing',
-        relevance: 'recommended',
-        reason: 'Send enrollment campaigns, updates, and newsletters',
-      },
-      {
-        category: 'Website Builder',
-        relevance: 'essential',
-        reason:
-          'Market programs, display schedules, and accept registrations online',
-      },
-      {
         category: 'Payment Processing',
         relevance: 'recommended',
         reason:
           'Collect tuition, course fees, and subscription payments',
       },
       {
-        category: 'Marketing Automation',
-        relevance: 'recommended',
-        reason: 'Automate enrollment follow-ups and re-engagement campaigns',
-      },
-      {
-        category: 'Social Media Management',
-        relevance: 'nice-to-have',
-        reason: 'Build brand awareness and showcase student success stories',
-      },
-      {
         category: 'Accounting Software',
         relevance: 'recommended',
         reason: 'Manage tuition revenue, instructor pay, and expenses',
       },
+      // Business-type-specific
+      {
+        category: 'Scheduling & Booking',
+        relevance: 'essential',
+        reason: 'Schedule sessions, manage tutor availability, and handle cancellations',
+        businessTypes: ['tutoring-service'],
+      },
       {
         category: 'E-commerce',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason: 'Sell courses, materials, and digital content online',
         businessTypes: ['online-course-creator'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason:
+          'Market courses, display catalogs, and accept enrollments online',
+        businessTypes: ['online-course-creator'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'recommended',
+        reason:
+          'Market programs, display schedules, and accept registrations',
+        businessTypes: ['tutoring-service', 'private-school', 'training-company'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'essential',
+        reason: 'Launch courses, nurture leads, and drive enrollment',
+        businessTypes: ['online-course-creator'],
+      },
+      {
+        category: 'Email Marketing',
+        relevance: 'recommended',
+        reason: 'Send enrollment campaigns, updates, and newsletters',
+        businessTypes: ['private-school', 'training-company'],
+      },
+      {
+        category: 'Marketing Automation',
+        relevance: 'essential',
+        reason: 'Automate enrollment funnels and student win-back campaigns',
+        businessTypes: ['online-course-creator'],
+      },
+      {
+        category: 'Marketing Automation',
+        relevance: 'recommended',
+        reason: 'Automate enrollment follow-ups and re-engagement campaigns',
+        businessTypes: ['training-company'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'recommended',
+        reason: 'Build brand awareness and showcase student success stories',
+        businessTypes: ['online-course-creator', 'tutoring-service'],
+      },
+      {
+        category: 'Project Management',
+        relevance: 'recommended',
+        reason: 'Coordinate curriculum development and training delivery',
+        businessTypes: ['training-company'],
       },
     ],
   },
@@ -913,6 +1169,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Scheduling & Booking',
         relevance: 'essential',
@@ -930,41 +1187,73 @@ export const INDUSTRIES: Industry[] = [
         relevance: 'essential',
         reason: 'Process memberships, class packs, and recurring payments',
       },
+      // Business-type-specific
+      {
+        category: 'Marketing Automation',
+        relevance: 'essential',
+        reason:
+          'Automate trial-to-member conversion and win-back campaigns',
+        businessTypes: ['gym', 'yoga-pilates-studio'],
+      },
       {
         category: 'Email Marketing',
         relevance: 'recommended',
         reason:
           'Send class reminders, promotions, and re-engagement campaigns',
+        businessTypes: ['gym', 'yoga-pilates-studio', 'spa-salon'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason:
+          'Build your personal brand, display certifications, and attract clients',
+        businessTypes: ['personal-trainer'],
       },
       {
         category: 'Website Builder',
         relevance: 'recommended',
         reason:
           'Showcase services, display schedules, and enable online booking',
+        businessTypes: ['gym', 'yoga-pilates-studio', 'spa-salon'],
+      },
+      {
+        category: 'Social Media Management',
+        relevance: 'essential',
+        reason:
+          'Share transformations, workout content, and build your personal brand',
+        businessTypes: ['personal-trainer'],
       },
       {
         category: 'Social Media Management',
         relevance: 'recommended',
         reason:
-          'Share transformations, class highlights, and build community',
-      },
-      {
-        category: 'Marketing Automation',
-        relevance: 'recommended',
-        reason:
-          'Automate trial-to-member conversion and win-back campaigns',
+          'Share class highlights, transformations, and build community',
+        businessTypes: ['gym', 'yoga-pilates-studio'],
       },
       {
         category: 'Accounting Software',
         relevance: 'recommended',
         reason:
           'Track membership revenue, instructor pay, and operating expenses',
+        businessTypes: ['gym', 'yoga-pilates-studio', 'spa-salon'],
       },
       {
         category: 'Point of Sale',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason: 'Sell retail products, supplements, and merchandise in-studio',
         businessTypes: ['gym', 'yoga-pilates-studio', 'spa-salon'],
+      },
+      {
+        category: 'Invoicing & Billing',
+        relevance: 'recommended',
+        reason: 'Invoice clients for personal training packages and sessions',
+        businessTypes: ['personal-trainer'],
+      },
+      {
+        category: 'Inventory Management',
+        relevance: 'nice-to-have',
+        reason: 'Track retail product stock and spa supplies',
+        businessTypes: ['spa-salon'],
       },
     ],
   },
@@ -1001,6 +1290,7 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Field Service Management',
         relevance: 'essential',
@@ -1024,38 +1314,76 @@ export const INDUSTRIES: Industry[] = [
         relevance: 'essential',
         reason: 'Handle invoicing, payroll, and financial tracking',
       },
+      // Business-type-specific
+      {
+        category: 'Payment Processing',
+        relevance: 'essential',
+        reason: 'Accept payments in the field via mobile devices',
+        businessTypes: ['handyman', 'cleaning-service'],
+      },
       {
         category: 'Payment Processing',
         relevance: 'recommended',
-        reason: 'Accept payments in the field via mobile devices',
+        reason: 'Process recurring service payments and one-time charges',
+        businessTypes: ['landscaping', 'pest-control'],
+      },
+      {
+        category: 'Marketing Automation',
+        relevance: 'essential',
+        reason: 'Automate seasonal reminders and recurring service renewal campaigns',
+        businessTypes: ['pest-control', 'landscaping'],
       },
       {
         category: 'Marketing Automation',
         relevance: 'recommended',
-        reason: 'Automate seasonal reminders and service renewal campaigns',
+        reason: 'Generate referrals and automate follow-up campaigns',
+        businessTypes: ['cleaning-service'],
       },
       {
         category: 'Email Marketing',
         relevance: 'recommended',
         reason:
-          'Send service reminders, seasonal tips, and referral requests',
+          'Send seasonal lawn care tips, service reminders, and referral requests',
+        businessTypes: ['landscaping', 'pest-control'],
+      },
+      {
+        category: 'Website Builder',
+        relevance: 'essential',
+        reason:
+          'Build a local web presence with service areas and online booking',
+        businessTypes: ['cleaning-service', 'pest-control'],
       },
       {
         category: 'Website Builder',
         relevance: 'recommended',
+        reason: 'Showcase past work and collect leads online',
+        businessTypes: ['landscaping', 'handyman'],
+      },
+      {
+        category: 'SEO',
+        relevance: 'essential',
         reason:
-          'Build a local web presence with service areas and online booking',
+          'Rank for "near me" searches like "house cleaning near me"',
+        businessTypes: ['cleaning-service', 'pest-control'],
       },
       {
         category: 'SEO',
         relevance: 'recommended',
         reason:
-          'Rank for local searches like "cleaning service near me"',
+          'Rank for local service searches in your area',
+        businessTypes: ['landscaping', 'handyman'],
       },
       {
         category: 'Invoicing & Billing',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason: 'Generate and send professional invoices after each job',
+        businessTypes: ['handyman', 'landscaping'],
+      },
+      {
+        category: 'HR & Payroll',
+        relevance: 'recommended',
+        reason: 'Manage cleaning crews, schedules, and payroll',
+        businessTypes: ['cleaning-service'],
       },
     ],
   },
@@ -1094,35 +1422,12 @@ export const INDUSTRIES: Industry[] = [
       },
     ],
     categoryMappings: [
+      // Universal
       {
         category: 'Project Management',
         relevance: 'essential',
         reason:
           'Plan sprints, track features, and manage product development',
-      },
-      {
-        category: 'DevOps',
-        relevance: 'essential',
-        reason:
-          'Automate CI/CD pipelines, deployments, and infrastructure management',
-      },
-      {
-        category: 'Analytics',
-        relevance: 'essential',
-        reason:
-          'Track product usage, user behavior, and conversion funnels',
-      },
-      {
-        category: 'CRM',
-        relevance: 'essential',
-        reason:
-          'Manage sales pipeline from leads to enterprise deals',
-      },
-      {
-        category: 'Customer Support',
-        relevance: 'essential',
-        reason:
-          'Handle support tickets, bugs, and customer feature requests',
       },
       {
         category: 'Team Collaboration',
@@ -1131,42 +1436,97 @@ export const INDUSTRIES: Industry[] = [
           'Coordinate distributed engineering and product teams',
       },
       {
+        category: 'CRM',
+        relevance: 'essential',
+        reason:
+          'Manage sales pipeline from leads to enterprise deals',
+      },
+      // Business-type-specific
+      {
+        category: 'DevOps',
+        relevance: 'essential',
+        reason:
+          'Automate CI/CD pipelines, deployments, and infrastructure management',
+        businessTypes: ['saas-startup', 'enterprise-software', 'mobile-app'],
+      },
+      {
+        category: 'Analytics',
+        relevance: 'essential',
+        reason:
+          'Track product usage, user behavior, and conversion funnels',
+        businessTypes: ['saas-startup', 'enterprise-software', 'mobile-app'],
+      },
+      {
+        category: 'Customer Support',
+        relevance: 'essential',
+        reason:
+          'Handle support tickets, bugs, and customer feature requests',
+        businessTypes: ['saas-startup', 'enterprise-software'],
+      },
+      {
         category: 'Cybersecurity',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Protect customer data and secure application infrastructure',
+        businessTypes: ['saas-startup', 'enterprise-software'],
       },
       {
         category: 'Customer Success',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Reduce churn with proactive onboarding and health scoring',
         businessTypes: ['saas-startup', 'enterprise-software'],
       },
       {
         category: 'Marketing Automation',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Drive trial signups and convert free users to paid plans',
+        businessTypes: ['saas-startup'],
+      },
+      {
+        category: 'Marketing Automation',
+        relevance: 'recommended',
+        reason: 'Generate leads for client engagements',
+        businessTypes: ['software-agency'],
       },
       {
         category: 'Business Intelligence',
-        relevance: 'recommended',
+        relevance: 'essential',
         reason:
           'Analyze MRR, churn, LTV, and other SaaS metrics',
         businessTypes: ['saas-startup', 'enterprise-software'],
       },
       {
+        category: 'Time Tracking & Productivity',
+        relevance: 'essential',
+        reason: 'Track billable hours per client project for accurate invoicing',
+        businessTypes: ['software-agency'],
+      },
+      {
+        category: 'Invoicing & Billing',
+        relevance: 'essential',
+        reason: 'Invoice clients for development milestones and ongoing work',
+        businessTypes: ['software-agency'],
+      },
+      {
         category: 'Applicant Tracking System (ATS)',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason: 'Scale hiring for engineering and go-to-market teams',
         businessTypes: ['saas-startup', 'enterprise-software'],
       },
       {
         category: 'Knowledge Management',
-        relevance: 'nice-to-have',
+        relevance: 'recommended',
         reason:
           'Document product specs, internal processes, and engineering decisions',
+        businessTypes: ['enterprise-software', 'software-agency'],
+      },
+      {
+        category: 'Analytics',
+        relevance: 'recommended',
+        reason: 'Track app store performance, downloads, and user engagement',
+        businessTypes: ['mobile-app'],
       },
     ],
   },
