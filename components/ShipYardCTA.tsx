@@ -46,7 +46,7 @@ export default function ShipYardCTA({ productSlug, productName }: ShipYardCTAPro
   const [builders, setBuilders] = useState<Builder[]>([]);
 
   const shipyardUrl =
-    process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.dev';
+    process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.reaplabs.ai';
   const reapUrl =
     process.env.NEXT_PUBLIC_REAP_URL || 'https://reaplabs.ai';
 

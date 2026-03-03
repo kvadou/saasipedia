@@ -49,7 +49,7 @@ export default function CostCalculator({
   productSlug,
 }: CostCalculatorProps) {
   const shipyardUrl =
-    process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.dev';
+    process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.reaplabs.ai';
   const reapLabsUrl = 'https://reaplabs.ai';
 
   // Estimation logic

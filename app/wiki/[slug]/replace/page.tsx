@@ -173,7 +173,7 @@ export default async function ReplacementGuidePage({ params }: PageProps) {
   const timeline = getTimeline(buildScore.score);
 
   const reapUrl = process.env.NEXT_PUBLIC_REAP_URL || 'https://reaplabs.ai';
-  const shipyardUrl = process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.dev';
+  const shipyardUrl = process.env.NEXT_PUBLIC_SHIPYARD_URL || 'https://shipyard.reaplabs.ai';
 
   const lowestPrice = product.pricing_tiers
     .map((t) => t.price_monthly)
