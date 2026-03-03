@@ -239,7 +239,7 @@ export default function CostCalculator({
           {/* CTAs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <a
-              href={`${shipyardUrl}/wiki/${productSlug}`}
+              href={`${shipyardUrl}/build?product=${productSlug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-wiki-accent text-white
