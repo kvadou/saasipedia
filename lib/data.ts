@@ -8,6 +8,7 @@ export interface Product {
   name: string;
   url: string | null;
   category: string | null;
+  normalized_category: string | null;
   tagline: string | null;
   description: string | null;
   feature_count: number;
@@ -71,7 +72,24 @@ export function slugifyCategory(category: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+// Display name overrides for categories where deslugification fails
+const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
+  'crm': 'CRM',
+  'seo': 'SEO',
+  'e-commerce': 'E-commerce',
+  'hr-and-payroll': 'HR & Payroll',
+  'it-service-management': 'IT Service Management',
+  'applicant-tracking-system-ats': 'Applicant Tracking System (ATS)',
+  'ai-and-machine-learning': 'AI & Machine Learning',
+  'no-code-low-code': 'No-Code/Low-Code',
+  'devops': 'DevOps',
+  'wordpress-themes-and-plugins': 'WordPress Themes & Plugins',
+  'healthcare-it': 'Healthcare IT',
+  'point-of-sale': 'Point of Sale',
+};
+
 export function deslugifyCategory(slug: string): string {
+  if (CATEGORY_DISPLAY_NAMES[slug]) return CATEGORY_DISPLAY_NAMES[slug];
   return slug
     .replace(/-/g, ' ')
     .replace(/\band\b/g, '&')
@@ -91,7 +109,7 @@ export function calculateBuildScore(product: {
   features?: any[];
   pricing_tiers?: any[];
   integrations?: any[];
-  category?: string | null;
+  normalized_category?: string | null;
 }): BuildScoreResult {
   const featureCount = product.features?.length || 0;
   const integrationCount = product.integrations?.length || 0;
@@ -107,11 +125,11 @@ export function calculateBuildScore(product: {
   else if (integrationCount > 25) score -= 0.5;
 
   // Category complexity
-  const hardCategories = ['erp', 'accounting', 'security', 'infrastructure', 'database'];
-  const mediumCategories = ['crm', 'hr', 'marketing-automation', 'ecommerce'];
-  const cat = product.category?.toLowerCase() || '';
-  if (hardCategories.includes(cat)) score -= 1;
-  else if (mediumCategories.includes(cat)) score -= 0.5;
+  const hardCategories = ['financial management', 'accounting software', 'cybersecurity', 'cloud infrastructure', 'database'];
+  const mediumCategories = ['crm', 'hr & payroll', 'marketing automation', 'e-commerce'];
+  const cat = product.normalized_category?.toLowerCase() || '';
+  if (hardCategories.some(c => cat.includes(c))) score -= 1;
+  else if (mediumCategories.some(c => cat.includes(c))) score -= 0.5;
 
   // Clamp to 1-5
   score = Math.max(1, Math.min(5, Math.round(score)));
@@ -185,12 +203,12 @@ export async function listProducts(options: {
     .order('quality_score', { ascending: false });
 
   if (category) {
-    query = query.eq('category', category);
+    query = query.eq('normalized_category', category);
   }
 
   if (search) {
     query = query.or(
-      `name.ilike.%${search}%,tagline.ilike.%${search}%,category.ilike.%${search}%`
+      `name.ilike.%${search}%,tagline.ilike.%${search}%,category.ilike.%${search}%,normalized_category.ilike.%${search}%`
     );
   }
 
@@ -209,17 +227,26 @@ export async function listProducts(options: {
 // ─── Category Queries ───────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<CategoryInfo[]> {
-  const { data, error } = await supabase
-    .from('reaper_products')
-    .select('category')
-    .eq('is_active', true)
-    .not('category', 'is', null);
-
-  if (error || !data) return [];
+  // Fetch ALL products (paginated — Supabase default limit is 1000)
+  let allRows: { normalized_category: string }[] = [];
+  let page = 0;
+  const pageSize = 1000;
+  while (true) {
+    const { data, error } = await supabase
+      .from('reaper_products')
+      .select('normalized_category')
+      .eq('is_active', true)
+      .not('normalized_category', 'is', null)
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    allRows.push(...(data as { normalized_category: string }[]));
+    if (data.length < pageSize) break;
+    page++;
+  }
 
   const counts: Record<string, number> = {};
-  for (const row of data) {
-    const cat = row.category as string;
+  for (const row of allRows) {
+    const cat = row.normalized_category;
     counts[cat] = (counts[cat] || 0) + 1;
   }
 
@@ -235,15 +262,24 @@ export async function getCategories(): Promise<CategoryInfo[]> {
 export async function getCategoryProducts(
   categoryName: string
 ): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from('reaper_products')
-    .select('*')
-    .eq('is_active', true)
-    .eq('category', categoryName)
-    .order('quality_score', { ascending: false });
-
-  if (error) return [];
-  return (data ?? []) as Product[];
+  // Fetch ALL products in this category (paginated)
+  let allProducts: Product[] = [];
+  let page = 0;
+  const pageSize = 1000;
+  while (true) {
+    const { data, error } = await supabase
+      .from('reaper_products')
+      .select('*')
+      .eq('is_active', true)
+      .eq('normalized_category', categoryName)
+      .order('quality_score', { ascending: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    allProducts.push(...(data as Product[]));
+    if (data.length < pageSize) break;
+    page++;
+  }
+  return allProducts;
 }
 
 // ─── Related Products ───────────────────────────────────────────────────────
@@ -257,7 +293,7 @@ export async function getRelatedProducts(
     .from('reaper_products')
     .select('*')
     .eq('is_active', true)
-    .eq('category', category)
+    .eq('normalized_category', category)
     .neq('slug', excludeSlug)
     .order('quality_score', { ascending: false })
     .limit(limit);
@@ -329,7 +365,7 @@ export async function searchProducts(
     .select('*')
     .eq('is_active', true)
     .or(
-      `name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`
+      `name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,normalized_category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`
     )
     .order('quality_score', { ascending: false })
     .limit(limit);
@@ -402,7 +438,7 @@ export async function getAlternatives(
     .from('reaper_products')
     .select('*')
     .eq('is_active', true)
-    .eq('category', category)
+    .eq('normalized_category', category)
     .neq('id', productId)
     .order('quality_score', { ascending: false })
     .limit(limit);
@@ -635,7 +671,7 @@ export async function getTopProductsByCategory(
     .from('reaper_products')
     .select('*')
     .eq('is_active', true)
-    .eq('category', categoryName)
+    .eq('normalized_category', categoryName)
     .gte('quality_score', 0.3)
     .order('quality_score', { ascending: false })
     .order('feature_count', { ascending: false })
@@ -705,18 +741,27 @@ export async function getProductsByCategories(
 ): Promise<Record<string, Product[]>> {
   if (categoryNames.length === 0) return {};
 
-  const { data, error } = await supabase
-    .from('reaper_products')
-    .select('*')
-    .eq('is_active', true)
-    .in('category', categoryNames)
-    .order('quality_score', { ascending: false });
-
-  if (error || !data) return {};
+  // Fetch ALL matching products (paginated)
+  let allData: Product[] = [];
+  let page = 0;
+  const pageSize = 1000;
+  while (true) {
+    const { data, error } = await supabase
+      .from('reaper_products')
+      .select('*')
+      .eq('is_active', true)
+      .in('normalized_category', categoryNames)
+      .order('quality_score', { ascending: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    allData.push(...(data as Product[]));
+    if (data.length < pageSize) break;
+    page++;
+  }
 
   const result: Record<string, Product[]> = {};
-  for (const product of data as Product[]) {
-    const cat = product.category;
+  for (const product of allData) {
+    const cat = product.normalized_category;
     if (!cat) continue;
     if (!result[cat]) result[cat] = [];
     if (result[cat].length < limitPerCategory) {

@@ -16,9 +16,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="text-base font-semibold text-wiki-text group-hover:text-wiki-accent transition-colors min-w-0">
           {product.name}
         </h3>
-        {product.category && (
+        {product.normalized_category && (
           <span className="wiki-badge ml-2 truncate max-w-[50%]">
-            {product.category}
+            {product.normalized_category}
           </span>
         )}
       </div>

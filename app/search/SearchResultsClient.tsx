@@ -41,7 +41,7 @@ export default function SearchResultsClient({ query, initialResults, categories 
 
     // Filter by category
     if (selectedCategories.size > 0) {
-      results = results.filter((r) => selectedCategories.has(r.category || 'Uncategorized'));
+      results = results.filter((r) => selectedCategories.has(r.normalized_category || r.category || 'Uncategorized'));
     }
 
     // Sort

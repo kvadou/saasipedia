@@ -29,7 +29,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
   // Build category facets from results
   const categoryMap: Record<string, number> = {};
   for (const r of results) {
-    const cat = r.category || 'Uncategorized';
+    const cat = r.normalized_category || r.category || 'Uncategorized';
     categoryMap[cat] = (categoryMap[cat] || 0) + 1;
   }
   const categories = Object.entries(categoryMap)

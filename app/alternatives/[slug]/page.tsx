@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const product = await getProductLiteBySlug(params.slug);
   if (!product) return { title: 'Not Found' };
 
-  const description = `Looking for ${product.name} alternatives? Compare ${product.category || 'similar'} tools with detailed feature, pricing, and integration analysis.`;
+  const description = `Looking for ${product.name} alternatives? Compare ${product.normalized_category || 'similar'} tools with detailed feature, pricing, and integration analysis.`;
 
   return {
     title: `Best ${product.name} Alternatives — Top Competitors Compared`,
@@ -56,10 +56,10 @@ function getStartingPrice(tiers: PricingTier[]): string {
 
 export default async function AlternativesPage({ params }: PageProps) {
   const product = await getProductLiteBySlug(params.slug);
-  if (!product || !product.category) notFound();
+  if (!product || !product.normalized_category) notFound();
 
   const [alternatives, productPricing] = await Promise.all([
-    getAlternatives(product.id, product.category, 20),
+    getAlternatives(product.id, product.normalized_category, 20),
     getProductPricingTiers(product.id),
   ]);
 
@@ -109,7 +109,7 @@ export default async function AlternativesPage({ params }: PageProps) {
           Best Alternatives to {product.name}
         </h1>
         <p className="text-wiki-text-muted">
-          {alternatives.length} {product.category} tools compared by features, pricing, and data quality.
+          {alternatives.length} {product.normalized_category} tools compared by features, pricing, and data quality.
         </p>
       </div>
 
@@ -201,17 +201,17 @@ export default async function AlternativesPage({ params }: PageProps) {
         </div>
       ) : (
         <p className="text-wiki-text-muted py-8 text-center">
-          No alternatives found in the {product.category} category yet.
+          No alternatives found in the {product.normalized_category} category yet.
         </p>
       )}
 
       {/* Category link */}
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
-          href={`/category/${slugifyCategory(product.category)}`}
+          href={`/category/${slugifyCategory(product.normalized_category)}`}
           className="inline-flex items-center gap-1 text-sm wiki-link"
         >
-          View all {product.category} products <ArrowRight className="w-3.5 h-3.5" />
+          View all {product.normalized_category} products <ArrowRight className="w-3.5 h-3.5" />
         </Link>
         <Link
           href={`/integrations/${product.slug}`}

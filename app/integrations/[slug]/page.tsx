@@ -207,9 +207,9 @@ export default async function IntegrationsPage({ params }: PageProps) {
         <Link href={`/alternatives/${product.slug}`} className="inline-flex items-center gap-1 text-sm wiki-link">
           View {product.name} alternatives <ArrowRight className="w-3.5 h-3.5" />
         </Link>
-        {product.category && (
-          <Link href={`/category/${slugifyCategory(product.category)}`} className="inline-flex items-center gap-1 text-sm wiki-link">
-            View all {product.category} products <ArrowRight className="w-3.5 h-3.5" />
+        {product.normalized_category && (
+          <Link href={`/category/${slugifyCategory(product.normalized_category)}`} className="inline-flex items-center gap-1 text-sm wiki-link">
+            View all {product.normalized_category} products <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}
       </div>

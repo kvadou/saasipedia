@@ -73,8 +73,8 @@ export default async function ProductPage({ params }: PageProps) {
   // Fetch related products and integration slug map in parallel
   const integrationNames = product.integrations.map((i) => i.name);
   const [related, integrationSlugMap] = await Promise.all([
-    product.category
-      ? getRelatedProducts(product.category, product.slug, 6)
+    product.normalized_category
+      ? getRelatedProducts(product.normalized_category, product.slug, 6)
       : Promise.resolve([] as Product[]),
     getProductSlugMap(integrationNames),
   ]);
@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: PageProps) {
     '@type': 'SoftwareApplication',
     name: product.name,
     description: product.description || product.tagline || undefined,
-    applicationCategory: product.category || 'BusinessApplication',
+    applicationCategory: product.normalized_category || 'BusinessApplication',
     operatingSystem: 'Web',
     url: product.url || `https://saasipedia.com/wiki/${product.slug}`,
     ...(lowestPrice != null && {
@@ -150,13 +150,13 @@ export default async function ProductPage({ params }: PageProps) {
         name: 'Home',
         item: 'https://saasipedia.com',
       },
-      ...(product.category
+      ...(product.normalized_category
         ? [
             {
               '@type': 'ListItem',
               position: 2,
-              name: product.category,
-              item: `https://saasipedia.com/category/${slugifyCategory(product.category)}`,
+              name: product.normalized_category,
+              item: `https://saasipedia.com/category/${slugifyCategory(product.normalized_category)}`,
             },
             {
               '@type': 'ListItem',
@@ -190,13 +190,13 @@ export default async function ProductPage({ params }: PageProps) {
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        {product.category && (
+        {product.normalized_category && (
           <>
             <Link
-              href={`/category/${slugifyCategory(product.category)}`}
+              href={`/category/${slugifyCategory(product.normalized_category)}`}
               className="hover:text-wiki-accent transition-colors"
             >
-              {product.category}
+              {product.normalized_category}
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
           </>
@@ -228,12 +228,12 @@ export default async function ProductPage({ params }: PageProps) {
             )}
 
             <div className="flex items-center gap-2 flex-wrap mb-2">
-              {product.category && (
+              {product.normalized_category && (
                 <Link
-                  href={`/category/${slugifyCategory(product.category)}`}
+                  href={`/category/${slugifyCategory(product.normalized_category)}`}
                   className="wiki-badge inline-block"
                 >
-                  {product.category}
+                  {product.normalized_category}
                 </Link>
               )}
               <BuildScore buildScore={buildScore} />

@@ -8,7 +8,7 @@ export interface BusinessType {
 }
 
 export interface CategoryMapping {
-  category: string; // must match reaper_products.category exactly
+  category: string; // must match reaper_products.normalized_category
   relevance: 'essential' | 'recommended' | 'nice-to-have';
   reason: string;
   businessTypes?: string[]; // if set, only show for these business type slugs
@@ -946,16 +946,10 @@ export const INDUSTRIES: Industry[] = [
       },
       // Business-type-specific
       {
-        category: 'Construction Management Software',
-        relevance: 'essential',
-        reason:
-          'Manage bids, blueprints, schedules, and subcontractor coordination',
-        businessTypes: ['general-contractor', 'commercial-builder'],
-      },
-      {
         category: 'Construction Management',
         relevance: 'essential',
-        reason: 'Coordinate job sites, crews, and project timelines',
+        reason:
+          'Manage bids, blueprints, schedules, subcontractor coordination, and project timelines',
         businessTypes: ['general-contractor', 'commercial-builder'],
       },
       {

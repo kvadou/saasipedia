@@ -129,7 +129,7 @@ export default async function PricingDirectoryPage() {
                       )}
                     </td>
                     <td className="py-2.5 pr-4 text-wiki-text-muted hidden sm:table-cell">
-                      {item.product.category || '—'}
+                      {item.product.normalized_category || '—'}
                     </td>
                     <td className="py-2.5 pr-4 text-wiki-text">
                       {formatPrice(item)}

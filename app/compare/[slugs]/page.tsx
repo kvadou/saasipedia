@@ -169,16 +169,16 @@ export default async function ComparePage({ params }: PageProps) {
             <tr className="border-b border-wiki-border/50">
               <td className="py-3 pr-4 text-wiki-text-muted">Category</td>
               <td className="py-3 px-4">
-                {productA.category ? (
-                  <Link href={`/category/${slugifyCategory(productA.category)}`} className="text-wiki-text hover:text-wiki-accent transition-colors">
-                    {productA.category}
+                {productA.normalized_category ? (
+                  <Link href={`/category/${slugifyCategory(productA.normalized_category)}`} className="text-wiki-text hover:text-wiki-accent transition-colors">
+                    {productA.normalized_category}
                   </Link>
                 ) : <span className="text-wiki-text-muted">—</span>}
               </td>
               <td className="py-3 pl-4">
-                {productB.category ? (
-                  <Link href={`/category/${slugifyCategory(productB.category)}`} className="text-wiki-text hover:text-wiki-accent transition-colors">
-                    {productB.category}
+                {productB.normalized_category ? (
+                  <Link href={`/category/${slugifyCategory(productB.normalized_category)}`} className="text-wiki-text hover:text-wiki-accent transition-colors">
+                    {productB.normalized_category}
                   </Link>
                 ) : <span className="text-wiki-text-muted">—</span>}
               </td>

@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   if (tsQuery) {
     const { data: ftsData } = await supabase
       .from('reaper_products')
-      .select('id, name, slug, category, tagline, feature_count, quality_score')
+      .select('id, name, slug, category, normalized_category, tagline, feature_count, quality_score')
       .eq('is_active', true)
       .textSearch('search_vector', tsQuery)
       .order('quality_score', { ascending: false })
@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
   // Fallback to ilike
   const { data } = await supabase
     .from('reaper_products')
-    .select('id, name, slug, category, tagline, feature_count, quality_score')
+    .select('id, name, slug, category, normalized_category, tagline, feature_count, quality_score')
     .eq('is_active', true)
-    .or(`name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`)
+    .or(`name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,category.ilike.%${sanitized}%,normalized_category.ilike.%${sanitized}%,description.ilike.%${sanitized}%`)
     .order('quality_score', { ascending: false })
     .limit(10);
 

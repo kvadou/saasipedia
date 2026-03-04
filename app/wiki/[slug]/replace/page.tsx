@@ -169,7 +169,7 @@ export default async function ReplacementGuidePage({ params }: PageProps) {
     .sort((a, b) => b[1].length - a[1].length);
   const topCategories = sortedCategories.slice(0, 8);
 
-  const techStack = getRecommendedStack(product.category);
+  const techStack = getRecommendedStack(product.normalized_category);
   const timeline = getTimeline(buildScore.score);
 
   const reapUrl = process.env.NEXT_PUBLIC_REAP_URL || 'https://reaplabs.ai';
@@ -201,13 +201,13 @@ export default async function ReplacementGuidePage({ params }: PageProps) {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://saasipedia.com' },
-        ...(product.category
+        ...(product.normalized_category
           ? [
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: product.category,
-                item: `https://saasipedia.com/category/${slugifyCategory(product.category)}`,
+                name: product.normalized_category,
+                item: `https://saasipedia.com/category/${slugifyCategory(product.normalized_category)}`,
               },
               {
                 '@type': 'ListItem',
@@ -253,13 +253,13 @@ export default async function ReplacementGuidePage({ params }: PageProps) {
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        {product.category && (
+        {product.normalized_category && (
           <>
             <Link
-              href={`/category/${slugifyCategory(product.category)}`}
+              href={`/category/${slugifyCategory(product.normalized_category)}`}
               className="hover:text-wiki-accent transition-colors"
             >
-              {product.category}
+              {product.normalized_category}
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
           </>

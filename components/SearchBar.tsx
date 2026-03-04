@@ -9,6 +9,7 @@ interface SearchResult {
   name: string;
   slug: string;
   category: string | null;
+  normalized_category: string | null;
   tagline: string | null;
   feature_count: number;
   quality_score: number;
@@ -214,9 +215,9 @@ export default function SearchBar({
                   <span className={`font-medium text-wiki-text ${isLarge ? 'text-base' : 'text-sm'}`}>
                     {result.name}
                   </span>
-                  {result.category && (
+                  {(result.normalized_category || result.category) && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-wiki-indigo/10 text-wiki-indigo shrink-0">
-                      {result.category}
+                      {result.normalized_category || result.category}
                     </span>
                   )}
                 </div>

@@ -10,7 +10,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const product = await getProductLiteBySlug(params.slug);
 
   const name = product?.name || params.slug;
-  const category = product?.category || 'SaaS Product';
+  const category = product?.normalized_category || product?.category || 'SaaS Product';
   const tagline = product?.tagline || '';
   const featureCount = product?.feature_count || 0;
 
