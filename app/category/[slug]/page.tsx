@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
-import ProductCard from '@/components/ProductCard';
+import CategoryProductList from '@/components/CategoryProductList';
 import {
   getCategories,
   getCategoryProductsRanked,
@@ -41,10 +41,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const categories = await getCategories();
   const match = categories.find((c) => c.slug === params.slug);
 
-  // Try exact match first, then deslugify
   const categoryName = match?.category || deslugifyCategory(params.slug);
 
-  // Resolve industry context from query params
   const industry = searchParams.industry
     ? getIndustryBySlug(searchParams.industry)
     : undefined;
@@ -54,7 +52,6 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   const products = await getCategoryProductsRanked(categoryName, industry?.slug);
 
-  // If no match found and deslugified also returned nothing, try case-insensitive
   if (products.length === 0 && !match) {
     for (const cat of categories) {
       if (cat.slug === params.slug) {
@@ -82,33 +79,13 @@ function renderCategoryPage(
     .filter((c) => c.category !== categoryName)
     .slice(0, 6);
 
-  const hasRankedProducts = industry && products.some((p) => p.relevance);
-  const sortLabel = hasRankedProducts
-    ? `Ranked by relevance for ${industry!.name}`
-    : 'Sorted by data quality';
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://saasipedia.com',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Categories',
-        item: 'https://saasipedia.com/categories',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: categoryName,
-        item: `https://saasipedia.com/category/${slug}`,
-      },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://saasipedia.com' },
+      { '@type': 'ListItem', position: 2, name: 'Categories', item: 'https://saasipedia.com/categories' },
+      { '@type': 'ListItem', position: 3, name: categoryName, item: `https://saasipedia.com/category/${slug}` },
     ],
   };
 
@@ -119,15 +96,12 @@ function renderCategoryPage(
         // JSON-LD structured data — not user input
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-sm text-wiki-text-muted mb-6">
-        <Link href="/" className="hover:text-wiki-accent transition-colors">
-          Home
-        </Link>
+        <Link href="/" className="hover:text-wiki-accent transition-colors">Home</Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/categories" className="hover:text-wiki-accent transition-colors">
-          Categories
-        </Link>
+        <Link href="/categories" className="hover:text-wiki-accent transition-colors">Categories</Link>
         <ChevronRight className="w-3.5 h-3.5" />
         <span className="text-wiki-text">{categoryName}</span>
       </nav>
@@ -143,54 +117,40 @@ function renderCategoryPage(
             Back to {industry.name}
           </Link>
           <span className="text-sm text-blue-600">
-            Browsing {categoryName} software recommended for{' '}
-            <strong>{businessType ? businessType.name : industry.name}</strong> businesses
+            Browsing {categoryName} software for{' '}
+            <strong>{businessType ? businessType.name : industry.name}</strong>
           </span>
         </div>
       )}
 
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-wiki-text mb-2">
           {categoryName} Software{industry ? ` for ${industry.name}` : ''}
         </h1>
         <p className="text-wiki-text-muted">
-          {products.length} {products.length === 1 ? 'product' : 'products'} in this category — {sortLabel}.
+          {products.length} {products.length === 1 ? 'product' : 'products'} in this category.
         </p>
       </div>
 
-      {/* Product grid */}
-      {products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              rank={product.relevance ? product.relevance.relevance_rank : undefined}
-              relevance={product.relevance}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16 text-wiki-text-muted">
-          <p>No products found in this category.</p>
-        </div>
-      )}
+      {/* Product list with toolbar */}
+      <CategoryProductList
+        products={JSON.parse(JSON.stringify(products))}
+        hasIndustry={!!industry}
+        industryName={industry?.name}
+      />
 
       {/* Related categories */}
       {relatedCategories.length > 0 && (
         <div className="border-t border-wiki-border pt-8">
-          <h2 className="text-lg font-semibold text-wiki-text mb-4">
-            Other Categories
-          </h2>
+          <h2 className="text-lg font-semibold text-wiki-text mb-4">Other Categories</h2>
           <div className="flex flex-wrap gap-2">
             {relatedCategories.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
                 className="px-3 py-1.5 rounded-md border border-wiki-border bg-wiki-bg-alt
-                  text-sm text-wiki-text hover:border-wiki-accent hover:text-wiki-accent
-                  transition-all"
+                  text-sm text-wiki-text hover:border-wiki-accent hover:text-wiki-accent transition-all"
               >
                 {cat.category} ({cat.count})
               </Link>
