@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronRight } from 'lucide-react';
 import { INDUSTRIES, getIndustryBySlug, getIndustryCategories } from '@/lib/industries';
-import { getProductsByCategories } from '@/lib/data';
+import { getProductsByCategories, getIndustryProductCounts } from '@/lib/data';
 import BusinessTypeFilter from '@/components/BusinessTypeFilter';
 import IndustryCategoryCard from '@/components/IndustryCategoryCard';
 import NewsletterSignup from '@/components/NewsletterSignup';
@@ -55,7 +55,10 @@ export default async function IndustryPage({ params, searchParams }: PageProps) 
 
   // Fetch products for all categories in one batch
   const categoryNames = categoryMappings.map((m) => m.category);
-  const productsByCategory = await getProductsByCategories(categoryNames, 3);
+  const [productsByCategory, productCounts] = await Promise.all([
+    getProductsByCategories(categoryNames, 3),
+    getIndustryProductCounts(industry.slug, categoryNames),
+  ]);
 
   // Related industries (exclude current)
   const relatedIndustries = INDUSTRIES.filter(
@@ -136,6 +139,7 @@ export default async function IndustryPage({ params, searchParams }: PageProps) 
               products={productsByCategory[mapping.category] || []}
               industrySlug={industry.slug}
               businessTypeSlug={selectedType}
+              productCount={productCounts[mapping.category]?.total ?? 0}
             />
           ))}
         </div>

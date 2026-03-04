@@ -771,3 +771,126 @@ export async function getProductsByCategories(
 
   return result;
 }
+
+// ─── Industry Relevance Queries ──────────────────────────────────────────────
+
+export interface RelevanceData {
+  relevance_rank: number;
+  market_position: string;
+  industry_specific: boolean;
+}
+
+export type RankedProduct = Product & { relevance?: RelevanceData };
+
+export async function getCategoryProductsRanked(
+  categoryName: string,
+  industrySlug?: string
+): Promise<RankedProduct[]> {
+  // Fetch all products in this category
+  const products = await getCategoryProducts(categoryName);
+  if (!industrySlug || products.length === 0) return products;
+
+  // Fetch relevance data for these products + industry
+  const productIds = products.map((p) => p.id);
+  const { data: relevanceRows, error } = await supabase
+    .from('industry_product_relevance')
+    .select('product_id, relevance_rank, market_position, industry_specific')
+    .eq('industry_slug', industrySlug)
+    .in('product_id', productIds);
+
+  if (error || !relevanceRows || relevanceRows.length === 0) return products;
+
+  // Build lookup map
+  const relevanceMap = new Map<string, RelevanceData>();
+  for (const row of relevanceRows) {
+    relevanceMap.set(row.product_id, {
+      relevance_rank: row.relevance_rank,
+      market_position: row.market_position,
+      industry_specific: row.industry_specific,
+    });
+  }
+
+  // Merge: ranked products first (sorted by rank), then unranked (sorted by quality_score)
+  const ranked: RankedProduct[] = [];
+  const unranked: RankedProduct[] = [];
+
+  for (const product of products) {
+    const rel = relevanceMap.get(product.id);
+    if (rel) {
+      ranked.push({ ...product, relevance: rel });
+    } else {
+      unranked.push(product);
+    }
+  }
+
+  ranked.sort((a, b) => (a.relevance!.relevance_rank - b.relevance!.relevance_rank));
+  return [...ranked, ...unranked];
+}
+
+export async function getIndustryProductCounts(
+  industrySlug: string,
+  categoryNames: string[]
+): Promise<Record<string, { total: number; ranked: number }>> {
+  if (categoryNames.length === 0) return {};
+
+  // Get total product counts per category
+  let allProducts: { normalized_category: string }[] = [];
+  let page = 0;
+  const pageSize = 1000;
+  while (true) {
+    const { data, error } = await supabase
+      .from('reaper_products')
+      .select('normalized_category')
+      .eq('is_active', true)
+      .in('normalized_category', categoryNames)
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    allProducts.push(...(data as { normalized_category: string }[]));
+    if (data.length < pageSize) break;
+    page++;
+  }
+
+  const totals: Record<string, number> = {};
+  for (const row of allProducts) {
+    totals[row.normalized_category] = (totals[row.normalized_category] || 0) + 1;
+  }
+
+  // Get ranked counts from relevance table
+  const { data: rankedRows, error: rErr } = await supabase
+    .from('industry_product_relevance')
+    .select('product_id, industry_slug')
+    .eq('industry_slug', industrySlug);
+
+  // Count ranked products that are in our categories
+  const rankedProductIds = new Set((rankedRows || []).map(r => r.product_id));
+
+  // We need to check which of these products are in our target categories
+  // Fetch product categories for ranked products
+  const rankedByCategory: Record<string, number> = {};
+  if (rankedProductIds.size > 0) {
+    const rankedIds = Array.from(rankedProductIds);
+    let rankedProducts: { id: string; normalized_category: string }[] = [];
+    for (let i = 0; i < rankedIds.length; i += 1000) {
+      const batch = rankedIds.slice(i, i + 1000);
+      const { data } = await supabase
+        .from('reaper_products')
+        .select('id, normalized_category')
+        .eq('is_active', true)
+        .in('id', batch)
+        .in('normalized_category', categoryNames);
+      if (data) rankedProducts.push(...(data as { id: string; normalized_category: string }[]));
+    }
+    for (const p of rankedProducts) {
+      rankedByCategory[p.normalized_category] = (rankedByCategory[p.normalized_category] || 0) + 1;
+    }
+  }
+
+  const result: Record<string, { total: number; ranked: number }> = {};
+  for (const cat of categoryNames) {
+    result[cat] = {
+      total: totals[cat] || 0,
+      ranked: rankedByCategory[cat] || 0,
+    };
+  }
+  return result;
+}

@@ -10,6 +10,7 @@ interface IndustryCategoryCardProps {
   products: Product[];
   industrySlug: string;
   businessTypeSlug?: string;
+  productCount?: number;
 }
 
 const relevanceBadge: Record<
@@ -37,6 +38,7 @@ export default function IndustryCategoryCard({
   products,
   industrySlug,
   businessTypeSlug,
+  productCount,
 }: IndustryCategoryCardProps) {
   const categorySlug = slugifyCategory(categoryName);
   const badge = relevanceBadge[relevance];
@@ -61,7 +63,12 @@ export default function IndustryCategoryCard({
         </span>
       </div>
 
-      {/* Reason */}
+      {/* Product count + reason */}
+      {productCount != null && productCount > 0 && (
+        <p className="text-xs font-medium text-wiki-accent mb-1">
+          {productCount} {productCount === 1 ? 'product' : 'products'}
+        </p>
+      )}
       <p className="text-sm text-wiki-text-muted mb-3 line-clamp-2">
         {reason}
       </p>

@@ -5,11 +5,12 @@ import { ChevronRight, ArrowLeft } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import {
   getCategories,
-  getCategoryProducts,
+  getCategoryProductsRanked,
   deslugifyCategory,
-  slugifyCategory,
+  type RankedProduct,
+  type CategoryInfo,
 } from '@/lib/data';
-import { getIndustryBySlug } from '@/lib/industries';
+import { getIndustryBySlug, type Industry, type BusinessType } from '@/lib/industries';
 
 export const revalidate = 3600;
 
@@ -42,7 +43,6 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   // Try exact match first, then deslugify
   const categoryName = match?.category || deslugifyCategory(params.slug);
-  const products = await getCategoryProducts(categoryName);
 
   // Resolve industry context from query params
   const industry = searchParams.industry
@@ -52,14 +52,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     ? industry.businessTypes.find((bt) => bt.slug === searchParams.type)
     : undefined;
 
+  const products = await getCategoryProductsRanked(categoryName, industry?.slug);
+
   // If no match found and deslugified also returned nothing, try case-insensitive
   if (products.length === 0 && !match) {
-    // Try finding by iterating categories
     for (const cat of categories) {
       if (cat.slug === params.slug) {
-        const catProducts = await getCategoryProducts(cat.category);
+        const catProducts = await getCategoryProductsRanked(cat.category, industry?.slug);
         if (catProducts.length > 0) {
-          // Redirect would be ideal, but we'll just render
           return renderCategoryPage(cat.category, catProducts, categories, params.slug, industry, businessType);
         }
       }
@@ -72,17 +72,22 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
 function renderCategoryPage(
   categoryName: string,
-  products: import('@/lib/data').Product[],
-  allCategories: import('@/lib/data').CategoryInfo[],
+  products: RankedProduct[],
+  allCategories: CategoryInfo[],
   slug: string,
-  industry?: import('@/lib/industries').Industry,
-  businessType?: import('@/lib/industries').BusinessType,
+  industry?: Industry,
+  businessType?: BusinessType,
 ) {
   const relatedCategories = allCategories
     .filter((c) => c.category !== categoryName)
     .slice(0, 6);
 
-  const breadcrumbJsonLd = JSON.stringify({
+  const hasRankedProducts = industry && products.some((p) => p.relevance);
+  const sortLabel = hasRankedProducts
+    ? `Ranked by relevance for ${industry!.name}`
+    : 'Sorted by data quality';
+
+  const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -105,11 +110,15 @@ function renderCategoryPage(
         item: `https://saasipedia.com/category/${slug}`,
       },
     ],
-  });
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbJsonLd }} />
+      <script
+        type="application/ld+json"
+        // JSON-LD structured data — not user input
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-sm text-wiki-text-muted mb-6">
         <Link href="/" className="hover:text-wiki-accent transition-colors">
@@ -146,7 +155,7 @@ function renderCategoryPage(
           {categoryName} Software{industry ? ` for ${industry.name}` : ''}
         </h1>
         <p className="text-wiki-text-muted">
-          {products.length} {products.length === 1 ? 'product' : 'products'} in this category, sorted by data quality.
+          {products.length} {products.length === 1 ? 'product' : 'products'} in this category — {sortLabel}.
         </p>
       </div>
 
@@ -154,7 +163,12 @@ function renderCategoryPage(
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              rank={product.relevance ? product.relevance.relevance_rank : undefined}
+              relevance={product.relevance}
+            />
           ))}
         </div>
       ) : (
