@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
 import CategoryProductList from '@/components/CategoryProductList';
+import CategoryCTA from '@/components/CategoryCTA';
 import {
   getCategories,
   getCategoryProductsRanked,
@@ -139,6 +140,16 @@ function renderCategoryPage(
         hasIndustry={!!industry}
         industryName={industry?.name}
       />
+
+      {/* CTA funnel — industry-filtered pages only */}
+      {industry && (
+        <CategoryCTA
+          categoryName={categoryName}
+          categorySlug={slug}
+          industryName={industry.name}
+          industrySlug={industry.slug}
+        />
+      )}
 
       {/* Related categories */}
       {relatedCategories.length > 0 && (
