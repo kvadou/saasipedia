@@ -39,16 +39,16 @@ export default function Header() {
               Categories
             </Link>
             <Link
-              href="/features"
-              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
-            >
-              Features
-            </Link>
-            <Link
               href="/pricing"
               className="text-wiki-text-muted hover:text-wiki-text transition-colors"
             >
               Pricing
+            </Link>
+            <Link
+              href="/about"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              How It Works
             </Link>
           </nav>
 
@@ -84,13 +84,6 @@ export default function Header() {
                 Categories
               </Link>
               <Link
-                href="/features"
-                onClick={() => setMobileOpen(false)}
-                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
-              >
-                Features
-              </Link>
-              <Link
                 href="/pricing"
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
@@ -98,11 +91,18 @@ export default function Header() {
                 Pricing
               </Link>
               <Link
+                href="/features"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Features
+              </Link>
+              <Link
                 href="/about"
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
               >
-                About
+                How It Works
               </Link>
             </nav>
           </div>

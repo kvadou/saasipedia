@@ -20,18 +20,18 @@ interface CategoryToolbarProps {
   filter: PositionFilter;
 }
 
-const SORT_OPTIONS: { value: SortOption; label: string; requiresIndustry?: boolean }[] = [
-  { value: 'relevance', label: 'Relevance', requiresIndustry: true },
+const SORT_OPTIONS: { value: SortOption; label: string; requiresRanked?: boolean }[] = [
+  { value: 'relevance', label: 'Relevance', requiresRanked: true },
   { value: 'features', label: 'Most Features' },
   { value: 'quality', label: 'Data Quality' },
   { value: 'name', label: 'Name A–Z' },
 ];
 
-const FILTER_OPTIONS: { value: PositionFilter; label: string; requiresIndustry?: boolean }[] = [
+const FILTER_OPTIONS: { value: PositionFilter; label: string; requiresRanked?: boolean; requiresIndustry?: boolean }[] = [
   { value: 'all', label: 'All' },
-  { value: 'leader', label: 'Leaders', requiresIndustry: true },
-  { value: 'challenger', label: 'Challengers', requiresIndustry: true },
-  { value: 'niche', label: 'Niche', requiresIndustry: true },
+  { value: 'leader', label: 'Leaders', requiresRanked: true },
+  { value: 'challenger', label: 'Challengers', requiresRanked: true },
+  { value: 'niche', label: 'Niche', requiresRanked: true },
   { value: 'specialist', label: 'Specialists', requiresIndustry: true },
 ];
 
@@ -48,10 +48,14 @@ export default function CategoryToolbar({
   filter,
 }: CategoryToolbarProps) {
   const sortOptions = SORT_OPTIONS.filter(
-    (o) => !o.requiresIndustry || (hasIndustry && hasRankedProducts)
+    (o) => !o.requiresRanked || hasRankedProducts
   );
   const filterOptions = FILTER_OPTIONS.filter(
-    (o) => !o.requiresIndustry || (hasIndustry && hasRankedProducts)
+    (o) => {
+      if (o.requiresIndustry) return hasIndustry && hasRankedProducts;
+      if (o.requiresRanked) return hasRankedProducts;
+      return true;
+    }
   );
 
   return (

@@ -661,6 +661,65 @@ export async function getTopProductSlugs(limit: number = 100): Promise<string[]>
   return data.map((r) => r.slug).filter(Boolean);
 }
 
+// ─── Homepage: Top ranked products per category ─────────────────────────────
+
+export async function getTopRankedByCategories(
+  categoryNames: string[],
+  limit: number = 3
+): Promise<Record<string, { name: string; slug: string }[]>> {
+  if (categoryNames.length === 0) return {};
+
+  // Fetch general rankings for these categories
+  const { data: relevanceRows, error: rErr } = await supabase
+    .from('industry_product_relevance')
+    .select('product_id, relevance_rank')
+    .eq('industry_slug', 'general')
+    .lte('relevance_rank', limit);
+
+  if (rErr || !relevanceRows || relevanceRows.length === 0) return {};
+
+  const productIds = relevanceRows.map((r) => r.product_id);
+
+  // Fetch product details
+  const { data: products, error: pErr } = await supabase
+    .from('reaper_products')
+    .select('id, name, slug, normalized_category')
+    .eq('is_active', true)
+    .in('normalized_category', categoryNames)
+    .in('id', productIds);
+
+  if (pErr || !products) return {};
+
+  // Build rank lookup
+  const rankMap = new Map<string, number>();
+  for (const r of relevanceRows) {
+    rankMap.set(r.product_id, r.relevance_rank);
+  }
+
+  // Group by category, sorted by rank, deduplicated by name
+  const result: Record<string, { name: string; slug: string }[]> = {};
+  for (const p of products) {
+    const cat = p.normalized_category;
+    if (!result[cat]) result[cat] = [];
+    // Skip if we already have a product with this name (handles duplicate DB entries)
+    if (!result[cat].some((existing) => existing.name === p.name)) {
+      result[cat].push({ name: p.name, slug: p.slug });
+    }
+  }
+
+  // Sort each category by rank
+  for (const cat of Object.keys(result)) {
+    result[cat].sort((a, b) => {
+      const aProduct = products.find((p) => p.slug === a.slug);
+      const bProduct = products.find((p) => p.slug === b.slug);
+      return (rankMap.get(aProduct?.id ?? '') ?? 999) - (rankMap.get(bProduct?.id ?? '') ?? 999);
+    });
+    result[cat] = result[cat].slice(0, limit);
+  }
+
+  return result;
+}
+
 // ─── Best-of Category Queries ───────────────────────────────────────────────
 
 export async function getTopProductsByCategory(
@@ -827,7 +886,18 @@ export async function getCategoryProductsRanked(
   }
 
   ranked.sort((a, b) => (a.relevance!.relevance_rank - b.relevance!.relevance_rank));
-  return [...ranked, ...unranked];
+
+  // Deduplicate by product name (handles duplicate DB entries)
+  const seen = new Set<string>();
+  const deduped: RankedProduct[] = [];
+  for (const product of [...ranked, ...unranked]) {
+    const nameLower = product.name.toLowerCase();
+    if (!seen.has(nameLower)) {
+      seen.add(nameLower);
+      deduped.push(product);
+    }
+  }
+  return deduped;
 }
 
 export async function getIndustryProductCounts(

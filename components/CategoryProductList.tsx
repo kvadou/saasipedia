@@ -24,7 +24,7 @@ export default function CategoryProductList({
   const [view, setView] = useState<ViewMode>('list');
   const hasRankedProducts = products.some((p) => p.relevance);
   const [sort, setSort] = useState<SortOption>(
-    hasIndustry && hasRankedProducts ? 'relevance' : 'quality'
+    hasRankedProducts ? 'relevance' : 'quality'
   );
   const [filter, setFilter] = useState<PositionFilter>('all');
 
