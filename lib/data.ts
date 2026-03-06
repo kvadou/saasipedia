@@ -788,14 +788,17 @@ export async function getCategoryProductsRanked(
 ): Promise<RankedProduct[]> {
   // Fetch all products in this category
   const products = await getCategoryProducts(categoryName);
-  if (!industrySlug || products.length === 0) return products;
+  if (products.length === 0) return products;
+
+  // Use 'general' rankings when no industry specified, otherwise industry-specific
+  const rankingSlug = industrySlug || 'general';
 
   // Fetch relevance data for these products + industry
   const productIds = products.map((p) => p.id);
   const { data: relevanceRows, error } = await supabase
     .from('industry_product_relevance')
     .select('product_id, relevance_rank, market_position, industry_specific')
-    .eq('industry_slug', industrySlug)
+    .eq('industry_slug', rankingSlug)
     .in('product_id', productIds);
 
   if (error || !relevanceRows || relevanceRows.length === 0) return products;
@@ -893,4 +896,71 @@ export async function getIndustryProductCounts(
     };
   }
   return result;
+}
+
+// ─── Industry Compliance Mapping ──────────────────────────────────────────
+
+const INDUSTRY_COMPLIANCE: Record<string, { name: string; description: string }> = {
+  healthcare: { name: 'HIPAA', description: 'HIPAA compliance for protecting patient health information' },
+  'financial-services': { name: 'SOC 2', description: 'SOC 2 compliance for financial data security and reporting' },
+  'legal-services': { name: 'ABA', description: 'ABA ethics rules for client data confidentiality' },
+  education: { name: 'FERPA', description: 'FERPA compliance for student data privacy' },
+  'real-estate': { name: 'RESPA', description: 'RESPA compliance for real estate settlement procedures' },
+};
+
+// ─── FAQ Generation ──────────────────────────────────────────────────────
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export function generateCategoryFAQs(
+  categoryName: string,
+  industryName: string,
+  industrySlug: string,
+  products: RankedProduct[],
+): FAQItem[] {
+  const faqs: FAQItem[] = [];
+  const year = new Date().getFullYear();
+  const top3 = products.slice(0, 3);
+
+  if (top3.length >= 3) {
+    faqs.push({
+      question: `What is the best ${categoryName.toLowerCase()} software for ${industryName.toLowerCase()} in ${year}?`,
+      answer: `Based on our analysis, the top ${categoryName.toLowerCase()} tools for ${industryName.toLowerCase()} are ${top3[0].name} (#1), ${top3[1].name} (#2), and ${top3[2].name} (#3). Rankings are based on industry relevance, feature depth, and data quality.`,
+    });
+  }
+
+  const industrySpecificProducts = products.filter((p) => p.relevance?.industry_specific);
+  if (industrySpecificProducts.length > 0) {
+    const names = industrySpecificProducts.slice(0, 5).map((p) => p.name).join(', ');
+    faqs.push({
+      question: `How many ${categoryName.toLowerCase()} tools are designed specifically for ${industryName.toLowerCase()}?`,
+      answer: `${industrySpecificProducts.length} ${categoryName.toLowerCase()} ${industrySpecificProducts.length === 1 ? 'product is' : 'products are'} built specifically for ${industryName.toLowerCase()} businesses, including ${names}.`,
+    });
+  }
+
+  if (top3.length >= 2) {
+    const p1 = top3[0];
+    const p2 = top3[1];
+    const p1Pos = p1.relevance?.market_position || 'top-ranked';
+    const p2Pos = p2.relevance?.market_position || 'runner-up';
+    const p1Specific = p1.relevance?.industry_specific ? `industry-specific ${industryName.toLowerCase()} solution` : 'general-purpose solution';
+    const p2Specific = p2.relevance?.industry_specific ? `industry-specific ${industryName.toLowerCase()} solution` : 'general-purpose solution';
+    faqs.push({
+      question: `What's the difference between ${p1.name} and ${p2.name} for ${industryName.toLowerCase()}?`,
+      answer: `${p1.name} is a ${p1Pos} ${p1Specific}, while ${p2.name} is a ${p2Pos} ${p2Specific}. Both rank in the top 3 for ${industryName.toLowerCase()} ${categoryName.toLowerCase()}.`,
+    });
+  }
+
+  const compliance = INDUSTRY_COMPLIANCE[industrySlug];
+  if (compliance) {
+    faqs.push({
+      question: `Do ${categoryName.toLowerCase()} tools for ${industryName.toLowerCase()} need to be ${compliance.name}-compliant?`,
+      answer: `Yes, ${industryName.toLowerCase()} businesses typically need ${compliance.description}. When choosing ${categoryName.toLowerCase()} software, verify that the vendor meets ${compliance.name} requirements for your use case.`,
+    });
+  }
+
+  return faqs;
 }
