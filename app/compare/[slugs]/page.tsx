@@ -147,18 +147,32 @@ export default async function ComparePage({ params }: PageProps) {
         </p>
       </div>
 
+      {/* Quick Verdict */}
+      <div className="mb-8 p-4 rounded-lg bg-wiki-bg-alt border border-wiki-border">
+        <h2 className="text-sm font-semibold text-wiki-text-muted uppercase tracking-wider mb-2">Quick Verdict</h2>
+        <p className="text-wiki-text leading-relaxed">
+          <strong>{productA.name}</strong> offers {productA.features.length > productB.features.length ? 'more features' : productA.features.length < productB.features.length ? 'fewer features' : 'the same number of features'} ({productA.features.length} vs {productB.features.length}){productA.integrations.length !== productB.integrations.length ? ` and ${productA.integrations.length > productB.integrations.length ? 'more' : 'fewer'} integrations (${productA.integrations.length} vs ${productB.integrations.length})` : ''}.
+          {' '}{getStartingPrice(productA) !== getStartingPrice(productB) ? (
+            <>Starting price: {productA.name} at {getStartingPrice(productA)} vs {productB.name} at {getStartingPrice(productB)}.</>
+          ) : (
+            <>Both start at {getStartingPrice(productA)}.</>
+          )}
+          {' '}<strong>{productA.name}</strong> has {uniqueA.length} unique features while <strong>{productB.name}</strong> has {uniqueB.length} unique features, with {sharedFeatures.length} features in common.
+        </p>
+      </div>
+
       {/* Quick Comparison Table */}
       <div className="overflow-x-auto mb-10">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-wiki-border">
               <th className="py-3 pr-4 text-left font-semibold text-wiki-text w-1/3"></th>
-              <th className="py-3 px-4 text-left font-semibold text-wiki-text w-1/3">
+              <th className="py-3 px-4 text-left font-semibold text-wiki-text w-1/3 text-sm sm:text-base">
                 <Link href={`/wiki/${productA.slug}`} className="hover:text-wiki-accent transition-colors">
                   {productA.name}
                 </Link>
               </th>
-              <th className="py-3 pl-4 text-left font-semibold text-wiki-text w-1/3">
+              <th className="py-3 pl-4 text-left font-semibold text-wiki-text w-1/3 text-sm sm:text-base">
                 <Link href={`/wiki/${productB.slug}`} className="hover:text-wiki-accent transition-colors">
                   {productB.name}
                 </Link>
@@ -266,8 +280,8 @@ export default async function ComparePage({ params }: PageProps) {
                   <thead>
                     <tr className="border-b border-wiki-border/50">
                       <th className="py-2 pr-4 text-left text-wiki-text-muted font-normal">Feature</th>
-                      <th className="py-2 px-4 text-center text-wiki-text-muted font-normal w-24">{productA.name}</th>
-                      <th className="py-2 pl-4 text-center text-wiki-text-muted font-normal w-24">{productB.name}</th>
+                      <th className="py-2 px-4 text-center text-wiki-text-muted font-normal w-16 sm:w-24 text-xs sm:text-sm truncate max-w-[64px] sm:max-w-none">{productA.name}</th>
+                      <th className="py-2 pl-4 text-center text-wiki-text-muted font-normal w-16 sm:w-24 text-xs sm:text-sm truncate max-w-[64px] sm:max-w-none">{productB.name}</th>
                     </tr>
                   </thead>
                   <tbody>

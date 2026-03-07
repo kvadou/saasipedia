@@ -151,7 +151,7 @@ export default async function HomePage() {
                     {cat.count} products
                   </div>
                   {top.length > 0 && (
-                    <div className="space-y-0.5">
+                    <div className="hidden sm:block space-y-0.5">
                       {top.map((p, i) => (
                         <div key={p.slug} className="text-xs text-wiki-text-muted flex items-center gap-1.5">
                           <span className="text-[10px] font-semibold text-wiki-accent w-3 text-right">{i + 1}</span>

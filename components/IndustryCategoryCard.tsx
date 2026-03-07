@@ -47,7 +47,7 @@ export default function IndustryCategoryCard({
   const buildUrl = `${reapUrl}/reap/start?category=${categorySlug}&industry=${industrySlug}${businessTypeSlug ? `&business=${businessTypeSlug}` : ''}`;
 
   return (
-    <div className="wiki-card flex flex-col">
+    <div className={`wiki-card flex flex-col ${relevance === 'essential' ? 'ring-1 ring-green-200 border-green-200' : ''}`}>
       {/* Top row: category + relevance badge */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <Link

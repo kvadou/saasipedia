@@ -7,6 +7,7 @@ import MobileToc from '@/components/MobileToc';
 import CostCalculator from '@/components/CostCalculator';
 import BuildScore from '@/components/BuildScore';
 import ShipYardCTA from '@/components/ShipYardCTA';
+import CollapsibleFeatureCategory from '@/components/CollapsibleFeatureCategory';
 import {
   getProductBySlug,
   getRelatedProducts,
@@ -252,6 +253,22 @@ export default async function ProductPage({ params }: PageProps) {
               How to Replace {product.name}
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
+
+            {/* Compare with alternatives */}
+            {related.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                <span className="text-sm text-wiki-text-muted">Compare:</span>
+                {related.slice(0, 3).map((alt) => (
+                  <Link
+                    key={alt.slug}
+                    href={`/compare/${[product.slug, alt.slug].sort().join('-vs-')}`}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-wiki-border text-sm text-wiki-text hover:border-wiki-accent hover:text-wiki-accent transition-all"
+                  >
+                    vs {alt.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Overview */}
@@ -294,37 +311,39 @@ export default async function ProductPage({ params }: PageProps) {
                       </span>
                     </h3>
 
-                    <div className="space-y-2">
-                      {catFeatures.map((feature) => (
-                        <div
-                          key={feature.id}
-                          className="pl-4 border-l-2 border-wiki-border py-1.5"
-                        >
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium text-wiki-text text-sm">
-                              {feature.name}
-                            </span>
-                            {feature.is_ai_powered && (
-                              <span className="wiki-badge-ai">
-                                <Sparkles className="w-3 h-3 mr-0.5" />
-                                AI
+                    <CollapsibleFeatureCategory featureCount={catFeatures.length}>
+                      <div className="space-y-2">
+                        {catFeatures.map((feature) => (
+                          <div
+                            key={feature.id}
+                            className="pl-4 border-l-2 border-wiki-border py-1.5"
+                          >
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-medium text-wiki-text text-sm">
+                                {feature.name}
                               </span>
-                            )}
-                            {feature.is_premium && (
-                              <span className="wiki-badge-premium">
-                                <Crown className="w-3 h-3 mr-0.5" />
-                                Premium
-                              </span>
+                              {feature.is_ai_powered && (
+                                <span className="wiki-badge-ai">
+                                  <Sparkles className="w-3 h-3 mr-0.5" />
+                                  AI
+                                </span>
+                              )}
+                              {feature.is_premium && (
+                                <span className="wiki-badge-premium">
+                                  <Crown className="w-3 h-3 mr-0.5" />
+                                  Premium
+                                </span>
+                              )}
+                            </div>
+                            {feature.description && (
+                              <p className="text-sm text-wiki-text-muted mt-0.5">
+                                {feature.description}
+                              </p>
                             )}
                           </div>
-                          {feature.description && (
-                            <p className="text-sm text-wiki-text-muted mt-0.5">
-                              {feature.description}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </CollapsibleFeatureCategory>
 
                     {/* Also in cross-link */}
                     {alsoIn && alsoIn.length > 0 && (
@@ -551,6 +570,14 @@ export default async function ProductPage({ params }: PageProps) {
               >
                 Replacement guide
               </Link>
+              {related.length > 0 && (
+                <Link
+                  href={`/compare/${[product.slug, related[0].slug].sort().join('-vs-')}`}
+                  className="block text-xs wiki-link"
+                >
+                  Compare with {related[0].name}
+                </Link>
+              )}
               <Link
                 href={`/alternatives/${product.slug}`}
                 className="block text-xs wiki-link"

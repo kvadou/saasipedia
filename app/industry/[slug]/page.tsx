@@ -129,20 +129,60 @@ export default async function IndustryPage({ params, searchParams }: PageProps) 
 
       {/* Category Cards Grid */}
       {categoryMappings.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-          {categoryMappings.map((mapping) => (
-            <IndustryCategoryCard
-              key={mapping.category}
-              categoryName={mapping.category}
-              relevance={mapping.relevance}
-              reason={mapping.reason}
-              products={productsByCategory[mapping.category] || []}
-              industrySlug={industry.slug}
-              businessTypeSlug={selectedType}
-              productCount={productCounts[mapping.category]?.total ?? 0}
-            />
-          ))}
-        </div>
+        <>
+          {(() => {
+            const essential = categoryMappings.filter((m) => m.relevance === 'essential');
+            const rest = categoryMappings.filter((m) => m.relevance !== 'essential');
+            return (
+              <>
+                {essential.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="text-lg font-semibold text-wiki-text mb-1">Essential Software</h2>
+                    <p className="text-sm text-wiki-text-muted mb-4">Must-have tools for {industry.name.toLowerCase()} businesses.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {essential.map((mapping) => (
+                        <IndustryCategoryCard
+                          key={mapping.category}
+                          categoryName={mapping.category}
+                          relevance={mapping.relevance}
+                          reason={mapping.reason}
+                          products={productsByCategory[mapping.category] || []}
+                          industrySlug={industry.slug}
+                          businessTypeSlug={selectedType}
+                          productCount={productCounts[mapping.category]?.total ?? 0}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {rest.length > 0 && (
+                  <div className="mb-12">
+                    {essential.length > 0 && (
+                      <>
+                        <h2 className="text-lg font-semibold text-wiki-text mb-1">Also Recommended</h2>
+                        <p className="text-sm text-wiki-text-muted mb-4">Additional tools to consider for your {industry.name.toLowerCase()} business.</p>
+                      </>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {rest.map((mapping) => (
+                        <IndustryCategoryCard
+                          key={mapping.category}
+                          categoryName={mapping.category}
+                          relevance={mapping.relevance}
+                          reason={mapping.reason}
+                          products={productsByCategory[mapping.category] || []}
+                          industrySlug={industry.slug}
+                          businessTypeSlug={selectedType}
+                          productCount={productCounts[mapping.category]?.total ?? 0}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </>
       ) : (
         <div className="text-center py-16 text-wiki-text-muted mb-12">
           <p>No category recommendations found for this selection.</p>

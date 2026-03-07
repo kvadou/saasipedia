@@ -5,13 +5,16 @@ import { ChevronRight, Layers, ArrowRight, Star, Check } from 'lucide-react';
 import {
   getCategories,
   getTopProductsByCategory,
+  getCategoryProductsRanked,
   getProductPricingTiers,
   slugifyCategory,
   deslugifyCategory,
   type Product,
+  type RankedProduct,
   type PricingTier,
   type CategoryInfo,
 } from '@/lib/data';
+import { INDUSTRIES, getIndustryBySlug, getIndustryCategories, type Industry } from '@/lib/industries';
 
 export const revalidate = 3600;
 
@@ -28,6 +31,8 @@ interface BestOfEntry {
   categoryName: string;
   audienceSlug: string | null;
   audienceLabel: string | null;
+  industrySlug: string | null;
+  industryName: string | null;
 }
 
 function parseBestOfSlug(slug: string): BestOfEntry | null {
@@ -41,6 +46,24 @@ function parseBestOfSlug(slug: string): BestOfEntry | null {
         categoryName: deslugifyCategory(catSlug),
         audienceSlug: audience.slug,
         audienceLabel: audience.label,
+        industrySlug: null,
+        industryName: null,
+      };
+    }
+  }
+
+  // Try matching "{category}-for-{industry}"
+  for (const industry of INDUSTRIES) {
+    const suffix = `-for-${industry.slug}`;
+    if (slug.endsWith(suffix)) {
+      const catSlug = slug.slice(0, slug.length - suffix.length);
+      return {
+        categorySlug: catSlug,
+        categoryName: deslugifyCategory(catSlug),
+        audienceSlug: null,
+        audienceLabel: null,
+        industrySlug: industry.slug,
+        industryName: industry.name,
       };
     }
   }
@@ -51,6 +74,8 @@ function parseBestOfSlug(slug: string): BestOfEntry | null {
     categoryName: deslugifyCategory(slug),
     audienceSlug: null,
     audienceLabel: null,
+    industrySlug: null,
+    industryName: null,
   };
 }
 
@@ -73,6 +98,20 @@ export async function generateStaticParams() {
     }
   }
 
+  // Industry × category best-of pages
+  // Only generate for categories that are mapped to each industry
+  const topCategories = viable.slice(0, 30); // top 30 categories by product count
+  for (const industry of INDUSTRIES) {
+    const industryCats = getIndustryCategories(industry);
+    for (const mapping of industryCats) {
+      const catSlug = slugifyCategory(mapping.category);
+      // Only generate if the category exists in our database
+      if (topCategories.some((c) => c.slug === catSlug)) {
+        params.push({ slug: `${catSlug}-for-${industry.slug}` });
+      }
+    }
+  }
+
   return params;
 }
 
@@ -88,9 +127,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const match = categories.find((c) => c.slug === entry.categorySlug);
   const categoryName = match?.category || entry.categoryName;
 
-  const audience = entry.audienceLabel ? ` for ${entry.audienceLabel}` : '';
-  const title = `Best ${categoryName} Software${audience} (${new Date().getFullYear()})`;
-  const description = `Compare the top ${categoryName.toLowerCase()} tools${audience.toLowerCase()}. Features, pricing, and quality ratings for ${match?.count || 'the best'} products.`;
+  const segment = entry.audienceLabel
+    ? ` for ${entry.audienceLabel}`
+    : entry.industryName
+      ? ` for ${entry.industryName}`
+      : '';
+  const audience = segment; // keep compat with existing var usage below
+  const title = `Best ${categoryName} Software${segment} (${new Date().getFullYear()})`;
+  const description = `Compare the top ${categoryName.toLowerCase()} tools${segment.toLowerCase()}. Features, pricing, and quality ratings for ${match?.count || 'the best'} products.`;
 
   return {
     title,
@@ -131,7 +175,11 @@ export default async function BestOfPage({ params }: PageProps) {
   const match = categories.find((c) => c.slug === entry.categorySlug);
   const categoryName = match?.category || entry.categoryName;
 
-  const products = await getTopProductsByCategory(categoryName, 20);
+  // Use industry-ranked data when industry segment is active
+  const isIndustryPage = !!entry.industrySlug;
+  const products: (Product | RankedProduct)[] = isIndustryPage
+    ? await getCategoryProductsRanked(categoryName, entry.industrySlug!)
+    : await getTopProductsByCategory(categoryName, 20);
   if (products.length === 0) notFound();
 
   // Fetch pricing for all products in parallel
@@ -148,7 +196,11 @@ export default async function BestOfPage({ params }: PageProps) {
 
   const audience = AUDIENCES.find((a) => a.slug === entry.audienceSlug);
   const year = new Date().getFullYear();
-  const titleSuffix = audience ? ` for ${audience.label}` : '';
+  const titleSuffix = audience
+    ? ` for ${audience.label}`
+    : entry.industryName
+      ? ` for ${entry.industryName}`
+      : '';
 
   // Related "best of" pages
   const relatedCategories = categories
@@ -206,36 +258,59 @@ export default async function BestOfPage({ params }: PageProps) {
         <p className="text-wiki-text-muted max-w-3xl">
           {audience
             ? audience.description
-            : `Top ${categoryName.toLowerCase()} tools ranked by data quality, features, and pricing. ${products.length} products compared.`}
+            : isIndustryPage
+              ? `Top ${categoryName.toLowerCase()} tools for ${entry.industryName!.toLowerCase()}, ranked by industry relevance and data quality. ${products.length} products compared.`
+              : `Top ${categoryName.toLowerCase()} tools ranked by data quality, features, and pricing. ${products.length} products compared.`}
         </p>
       </div>
 
-      {/* Audience toggles */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <Link
-          href={`/best/${entry.categorySlug}`}
-          className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-            !entry.audienceSlug
-              ? 'bg-wiki-accent text-white border-wiki-accent'
-              : 'border-wiki-border text-wiki-text-muted hover:border-wiki-accent hover:text-wiki-accent'
-          }`}
-        >
-          All
-        </Link>
-        {AUDIENCES.map((aud) => (
+      {/* BLUF intro — industry best-of pages */}
+      {isIndustryPage && products.length >= 3 && (() => {
+        const top3 = products.slice(0, 3);
+        const rankedProducts = products as RankedProduct[];
+        const industrySpecificCount = rankedProducts.filter((p) => p.relevance?.industry_specific).length;
+        return (
+          <div className="mb-8 p-4 rounded-lg bg-wiki-bg-alt border border-wiki-border">
+            <p className="text-wiki-text leading-relaxed">
+              The best {categoryName.toLowerCase()} for {entry.industryName!.toLowerCase()} in {year}:{' '}
+              <strong>{top3[0].name}</strong> leads, followed by{' '}
+              <strong>{top3[1].name}</strong> and <strong>{top3[2].name}</strong>.
+              {industrySpecificCount > 0 && (
+                <> {industrySpecificCount} of the top {Math.min(products.length, 10)} {industrySpecificCount === 1 ? 'is' : 'are'} built specifically for {entry.industryName!.toLowerCase()} businesses.</>
+              )}
+            </p>
+          </div>
+        );
+      })()}
+
+      {/* Audience toggles — hide on industry pages */}
+      {!isIndustryPage && (
+        <div className="flex flex-wrap gap-2 mb-8">
           <Link
-            key={aud.slug}
-            href={`/best/${entry.categorySlug}-for-${aud.slug}`}
+            href={`/best/${entry.categorySlug}`}
             className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-              entry.audienceSlug === aud.slug
+              !entry.audienceSlug
                 ? 'bg-wiki-accent text-white border-wiki-accent'
                 : 'border-wiki-border text-wiki-text-muted hover:border-wiki-accent hover:text-wiki-accent'
             }`}
           >
-            {aud.label}
+            All
           </Link>
-        ))}
-      </div>
+          {AUDIENCES.map((aud) => (
+            <Link
+              key={aud.slug}
+              href={`/best/${entry.categorySlug}-for-${aud.slug}`}
+              className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                entry.audienceSlug === aud.slug
+                  ? 'bg-wiki-accent text-white border-wiki-accent'
+                  : 'border-wiki-border text-wiki-text-muted hover:border-wiki-accent hover:text-wiki-accent'
+              }`}
+            >
+              {aud.label}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Product list */}
       <div className="space-y-4">
@@ -316,6 +391,14 @@ export default async function BestOfPage({ params }: PageProps) {
                 >
                   View Details
                 </Link>
+                {products.length >= 2 && (
+                  <Link
+                    href={`/compare/${[product.slug, products[index === 0 ? 1 : 0].slug].sort().join('-vs-')}`}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium border border-wiki-border text-wiki-text-muted hover:border-wiki-accent hover:text-wiki-accent transition-colors"
+                  >
+                    Compare
+                  </Link>
+                )}
                 <Link
                   href={`/alternatives/${product.slug}`}
                   className="px-3 py-1.5 rounded-md text-xs font-medium border border-wiki-border text-wiki-text-muted hover:border-wiki-accent hover:text-wiki-accent transition-colors"
