@@ -13,14 +13,14 @@ export const metadata: Metadata = {
     template: '%s | SaaSipedia',
   },
   description:
-    'Explore detailed features, pricing, and integrations for hundreds of SaaS products. The free, open encyclopedia of business software.',
+    'The free encyclopedia of business software. Browse thousands of SaaS products with independently verified features, pricing, and integrations.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'SaaSipedia — The Encyclopedia of Business Software',
     description:
-      'Explore detailed features, pricing, and integrations for hundreds of SaaS products.',
+      'The free encyclopedia of business software. Browse thousands of SaaS products with independently verified features, pricing, and integrations.',
     type: 'website',
     siteName: 'SaaSipedia',
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SaaSipedia — The Encyclopedia of Business Software',
     description:
-      'Explore detailed features, pricing, and integrations for hundreds of SaaS products.',
+      'The free encyclopedia of business software. Browse thousands of SaaS products with independently verified features, pricing, and integrations.',
   },
 };
 

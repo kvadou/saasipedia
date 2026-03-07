@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Layers, Tag, Shield, BarChart3, Search } from 'lucide-react';
+import { ArrowRight, Layers, Tag, Shield, BookOpen, Search } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import {
@@ -42,11 +42,11 @@ export default async function HomePage() {
             SaaSipedia
           </h1>
           <p className="text-lg sm:text-xl text-wiki-text-muted mb-2 max-w-2xl mx-auto">
-            Software rankings based on real market share — not who pays the most.
+            Every SaaS product, explained.
           </p>
           <p className="text-sm text-wiki-text-muted mb-8 max-w-xl mx-auto">
-            Compare {productCount.toLocaleString()} products across {categoryCount} categories.
-            Independent, AI-curated, and free.
+            Browse {productCount.toLocaleString()} products across {categoryCount} categories.
+            Features, pricing, integrations — all independently verified.
           </p>
 
           <div className="flex justify-center">
@@ -60,19 +60,19 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center px-4">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
-              <BarChart3 className="w-5 h-5 text-wiki-accent" />
+              <BookOpen className="w-5 h-5 text-wiki-accent" />
             </div>
-            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Ranked by Market Share</h3>
+            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Complete Product Profiles</h3>
             <p className="text-xs text-wiki-text-muted leading-relaxed">
-              Products are ranked by actual global adoption. The most widely used tools
-              appear first — not whoever buys the top spot.
+              Every product page covers features, pricing tiers, integrations,
+              and alternatives — everything you need to understand a tool before you buy.
             </p>
           </div>
           <div className="text-center px-4">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
               <Shield className="w-5 h-5 text-wiki-accent" />
             </div>
-            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Independent Data</h3>
+            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Independently Verified</h3>
             <p className="text-xs text-wiki-text-muted leading-relaxed">
               No vendor-submitted listings. Product data is extracted from public
               sources — pricing pages, docs, and feature lists — then verified by AI.
@@ -82,10 +82,10 @@ export default async function HomePage() {
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
               <Search className="w-5 h-5 text-wiki-accent" />
             </div>
-            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Filter by Your Industry</h3>
+            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Browse by Industry</h3>
             <p className="text-xs text-wiki-text-muted leading-relaxed">
-              A CRM for healthcare is different from a CRM for construction. Browse software
-              ranked specifically for your industry and business type.
+              A CRM for healthcare is different from a CRM for construction. Find software
+              that fits your industry and business type.
             </p>
           </div>
         </div>
@@ -94,10 +94,10 @@ export default async function HomePage() {
       {/* Industry Grid */}
       <section id="industries" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-wiki-border">
         <h2 className="text-xl font-semibold text-wiki-text mb-2">
-          What kind of business do you run?
+          Browse by industry
         </h2>
         <p className="text-sm text-wiki-text-muted mb-6">
-          Get software recommendations tailored to your industry.
+          Explore software categories relevant to your field.
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -127,8 +127,8 @@ export default async function HomePage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-wiki-border">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-wiki-text">Browse by software category</h2>
-              <p className="text-sm text-wiki-text-muted mt-1">Top products in each category, ranked by adoption.</p>
+              <h2 className="text-xl font-semibold text-wiki-text">Software categories</h2>
+              <p className="text-sm text-wiki-text-muted mt-1">Explore products by category. Each profile includes features, pricing, and integrations.</p>
             </div>
             <Link href="/categories" className="wiki-link text-sm flex items-center gap-1 shrink-0">
               All categories <ArrowRight className="w-3.5 h-3.5" />
