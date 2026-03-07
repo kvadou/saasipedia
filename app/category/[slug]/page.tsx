@@ -11,6 +11,7 @@ import {
   slugifyCategory,
   deslugifyCategory,
   generateCategoryFAQs,
+  generateCategoryKnowledgePanel,
   type RankedProduct,
   type CategoryInfo,
 } from '@/lib/data';
@@ -99,6 +100,24 @@ function renderCategoryPage(
     ],
   };
 
+  // Knowledge panel
+  const knowledgePanel = generateCategoryKnowledgePanel(categoryName, products.length, products);
+
+  const knowledgePanelJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: knowledgePanel.title,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: knowledgePanel.description,
+        },
+      },
+    ],
+  };
+
   // Generate FAQs for industry-filtered pages
   const faqs = industry
     ? generateCategoryFAQs(categoryName, industry.name, industry.slug, products)
@@ -157,6 +176,10 @@ function renderCategoryPage(
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(knowledgePanelJsonLd) }}
+      />
 
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-sm text-wiki-text-muted mb-6">
@@ -192,6 +215,12 @@ function renderCategoryPage(
         <p className="text-wiki-text-muted">
           {products.length} {products.length === 1 ? 'product' : 'products'} in this category.
         </p>
+      </div>
+
+      {/* What is X? knowledge panel */}
+      <div className="mb-8 p-5 rounded-lg bg-wiki-bg-alt border border-wiki-border">
+        <h2 className="text-base font-semibold text-wiki-text mb-2">{knowledgePanel.title}</h2>
+        <p className="text-sm text-wiki-text-muted leading-relaxed">{knowledgePanel.description}</p>
       </div>
 
       {/* BLUF intro */}

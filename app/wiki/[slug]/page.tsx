@@ -5,6 +5,7 @@ import { ChevronRight, ExternalLink, Tag, Sparkles, Crown, Hammer, ArrowRight } 
 import ProductCard from '@/components/ProductCard';
 import MobileToc from '@/components/MobileToc';
 import CostCalculator from '@/components/CostCalculator';
+import BuildVsBuyCalculator from '@/components/BuildVsBuyCalculator';
 import BuildScore from '@/components/BuildScore';
 import ShipYardCTA from '@/components/ShipYardCTA';
 import CollapsibleFeatureCategory from '@/components/CollapsibleFeatureCategory';
@@ -111,6 +112,7 @@ export default async function ProductPage({ params }: PageProps) {
     tocSections.push({ id: 'pricing', label: 'Pricing' });
   }
   tocSections.push({ id: 'cost-calculator', label: 'Cost Calculator' });
+  tocSections.push({ id: 'build-vs-buy', label: 'Build vs Buy' });
   if (product.integrations.length > 0) {
     tocSections.push({ id: 'integrations', label: 'Integrations' });
   }
@@ -445,6 +447,15 @@ export default async function ProductPage({ params }: PageProps) {
             buildScore={buildScore.score}
             lowestPaidPrice={lowestPrice ?? null}
             productSlug={product.slug}
+          />
+
+          {/* Build vs Buy Calculator */}
+          <BuildVsBuyCalculator
+            productName={product.name}
+            productSlug={product.slug}
+            featureCount={product.features.length}
+            lowestPaidPrice={lowestPrice ?? null}
+            buildScore={buildScore.score}
           />
 
           {/* Integrations */}

@@ -1034,3 +1034,149 @@ export function generateCategoryFAQs(
 
   return faqs;
 }
+
+// ─── Category Knowledge Panel ────────────────────────────────────────────
+
+export function generateCategoryKnowledgePanel(
+  categoryName: string,
+  productCount: number,
+  topProducts: { name: string }[],
+): { title: string; description: string } {
+  const name = categoryName.toLowerCase();
+  const nameSuffix = name.endsWith('software') ? '' : ' software';
+  const top3Names = topProducts.slice(0, 3).map((p) => p.name);
+  const year = new Date().getFullYear();
+
+  const description = [
+    `${categoryName}${nameSuffix} is a category of business tools `,
+    `with ${productCount} products tracked on SaaSipedia as of ${year}.`,
+    top3Names.length >= 3
+      ? ` The most widely adopted products include ${top3Names[0]}, ${top3Names[1]}, and ${top3Names[2]}.`
+      : top3Names.length > 0
+        ? ` Notable products include ${top3Names.join(' and ')}.`
+        : '',
+    ` Each product profile includes a complete feature breakdown, pricing tiers, integration list, and comparison tools.`,
+  ].join('');
+
+  return {
+    title: `What is ${categoryName}${nameSuffix}?`,
+    description,
+  };
+}
+
+// ─── Glossary ──────────────────────────────────────────────────────────────
+
+export interface GlossaryTerm {
+  name: string;
+  slug: string;
+  description: string | null;
+  productCount: number;
+  isAiPowered: boolean;
+}
+
+export async function getFeatureGlossaryTerms(limit = 200): Promise<GlossaryTerm[]> {
+  // Get distinct feature names with counts
+  let rpcData: any[] | null = null;
+  try {
+    const res = await supabase
+      .rpc('get_feature_glossary', { result_limit: limit });
+    if (!res.error && res.data) rpcData = res.data;
+  } catch {
+    // RPC doesn't exist — fall through to fallback
+  }
+  const data = rpcData;
+
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    // Fallback: query features table directly
+    let allFeatures: { name: string; description: string | null; is_ai_powered: boolean }[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data: features, error: fErr } = await supabase
+        .from('reaper_features')
+        .select('name, description, is_ai_powered')
+        .order('name')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+      if (fErr || !features || features.length === 0) break;
+      allFeatures.push(...features);
+      if (features.length < pageSize) break;
+      page++;
+    }
+
+    if (allFeatures.length === 0) return [];
+
+    // Aggregate by name
+    const termMap = new Map<string, { name: string; description: string | null; count: number; isAi: boolean }>();
+    for (const f of allFeatures) {
+      const key = f.name.toLowerCase();
+      const existing = termMap.get(key);
+      if (existing) {
+        existing.count++;
+        if (f.is_ai_powered) existing.isAi = true;
+        if (!existing.description && f.description) existing.description = f.description;
+      } else {
+        termMap.set(key, {
+          name: f.name,
+          description: f.description,
+          count: 1,
+          isAi: f.is_ai_powered,
+        });
+      }
+    }
+
+    return Array.from(termMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map((t) => ({
+        name: t.name,
+        slug: slugifyCategory(t.name),
+        description: t.description,
+        productCount: t.count,
+        isAiPowered: t.isAi,
+      }));
+  }
+
+  return (data as any[]).map((d: any) => ({
+    name: d.name,
+    slug: slugifyCategory(d.name),
+    description: d.description,
+    productCount: d.product_count,
+    isAiPowered: d.is_ai_powered,
+  }));
+}
+
+export async function getFeatureGlossaryTerm(featureName: string): Promise<{
+  name: string;
+  description: string | null;
+  products: { name: string; slug: string; category: string | null }[];
+  isAiPowered: boolean;
+} | null> {
+  const { data: features } = await supabase
+    .from('reaper_features')
+    .select('name, description, is_ai_powered, product_id')
+    .ilike('name', featureName.replace(/-/g, ' ').replace(/%/g, ''))
+    .limit(100);
+
+  if (!features || features.length === 0) return null;
+
+  const productIds = Array.from(new Set(features.map((f) => f.product_id)));
+  const { data: products } = await supabase
+    .from('reaper_products')
+    .select('name, slug, normalized_category')
+    .in('id', productIds.slice(0, 50))
+    .eq('is_active', true)
+    .order('quality_score', { ascending: false });
+
+  const firstWithDesc = features.find((f) => f.description);
+
+  return {
+    name: features[0].name,
+    description: firstWithDesc?.description || null,
+    products: (products || []).map((p) => ({
+      name: p.name,
+      slug: p.slug,
+      category: p.normalized_category,
+    })),
+    isAiPowered: features.some((f) => f.is_ai_powered),
+  };
+}

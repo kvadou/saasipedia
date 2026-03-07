@@ -45,6 +45,18 @@ export default function Header() {
               Pricing
             </Link>
             <Link
+              href="/stack"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              Stack Builder
+            </Link>
+            <Link
+              href="/glossary"
+              className="text-wiki-text-muted hover:text-wiki-text transition-colors"
+            >
+              Glossary
+            </Link>
+            <Link
               href="/about"
               className="text-wiki-text-muted hover:text-wiki-text transition-colors"
             >
@@ -91,11 +103,25 @@ export default function Header() {
                 Pricing
               </Link>
               <Link
+                href="/stack"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Stack Builder
+              </Link>
+              <Link
                 href="/features"
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
               >
                 Features
+              </Link>
+              <Link
+                href="/glossary"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-wiki-text-muted hover:text-wiki-text hover:bg-wiki-bg-alt transition-colors"
+              >
+                Glossary
               </Link>
               <Link
                 href="/about"
