@@ -823,6 +823,8 @@ export async function getProductsByCategories(
     const cat = product.normalized_category;
     if (!cat) continue;
     if (!result[cat]) result[cat] = [];
+    // Skip duplicates by name (handles duplicate DB entries)
+    if (result[cat].some((existing) => existing.name === product.name)) continue;
     if (result[cat].length < limitPerCategory) {
       result[cat].push(product);
     }
