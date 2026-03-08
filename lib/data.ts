@@ -1037,6 +1037,49 @@ export function generateCategoryFAQs(
 
 // ─── Category Knowledge Panel ────────────────────────────────────────────
 
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  'CRM Software':
+    'Customer relationship management (CRM) software centralizes every interaction a business has with prospects and customers — from first contact through post-sale support — into a single system of record. Sales teams, account managers, and support staff use CRMs to track deals, automate follow-ups, and forecast revenue. Modern CRMs have expanded beyond contact databases to include pipeline analytics, marketing attribution, and AI-driven lead scoring.',
+  'Project Management':
+    'Project management software provides structured workflows for planning, executing, and tracking work across teams and departments. Product managers, engineering leads, and operations teams rely on these tools to break initiatives into tasks, assign ownership, set deadlines, and visualize progress through boards, timelines, and Gantt charts. As remote and hybrid work has become standard, project management platforms have become the operational backbone of most knowledge-work organizations.',
+  'Accounting Software':
+    'Accounting software automates the core financial recordkeeping that every business requires — general ledger management, accounts payable and receivable, invoicing, bank reconciliation, and tax preparation. Finance teams and small business owners use these tools to maintain accurate books, generate financial statements, and stay compliant with tax regulations. Cloud-based accounting platforms have largely replaced desktop software, enabling real-time financial visibility and integration with banking and payroll systems.',
+  'Email Marketing':
+    'Email marketing software enables businesses to design, send, and analyze targeted email campaigns to subscriber lists. Marketing teams use these platforms to nurture leads, announce products, deliver newsletters, and drive conversions through segmented audiences and automated drip sequences. Advanced platforms include A/B testing, deliverability optimization, and behavioral triggers that send messages based on subscriber actions.',
+  'Help Desk Software':
+    'Help desk software organizes customer support requests into a ticketing system that tracks issues from submission to resolution. Support teams use these tools to manage multi-channel inquiries (email, chat, phone, social), enforce SLAs, and build self-service knowledge bases that deflect common questions. Modern help desks incorporate AI-assisted routing, canned responses, and customer satisfaction scoring to improve response quality at scale.',
+  'HR Software':
+    'Human resources (HR) software manages the full employee lifecycle — recruiting, onboarding, payroll, benefits administration, performance reviews, and offboarding. HR departments and people operations teams use these platforms to centralize employee records, ensure labor law compliance, and automate time-consuming administrative processes. The category spans point solutions for specific HR functions and comprehensive HRIS/HCM suites that unify all people management in one system.',
+  'Marketing Automation':
+    'Marketing automation software orchestrates multi-channel campaigns that respond dynamically to prospect and customer behavior across email, web, social, and advertising channels. Marketing teams use these platforms to score leads, trigger personalized content sequences, and hand off sales-ready prospects to CRM systems. By replacing manual campaign execution with rule-based and AI-driven workflows, marketing automation enables small teams to run sophisticated demand-generation programs at enterprise scale.',
+  'Video Conferencing':
+    'Video conferencing software enables real-time audio and video communication between individuals and groups over the internet, replacing in-person meetings for distributed teams. Businesses of all sizes use these tools for team standups, client calls, webinars, and all-hands meetings, typically with screen sharing, recording, and chat features. The category experienced explosive growth during the shift to remote work and now serves as foundational infrastructure for modern workplace communication.',
+  'Cloud Storage':
+    'Cloud storage services provide on-demand file storage and synchronization across devices, eliminating reliance on local hard drives and on-premises servers. Teams use cloud storage to share documents, collaborate on files in real time, and maintain version history with automatic backups. Enterprise-grade platforms add granular access controls, audit logging, and compliance certifications required by regulated industries.',
+  'E-Commerce Platforms':
+    'E-commerce platforms provide the infrastructure for businesses to sell products and services online, including storefront design, product catalog management, shopping cart functionality, and payment processing. Retailers, D2C brands, and B2B sellers use these platforms to launch and operate online stores without building custom software. Modern platforms extend into inventory management, multi-channel selling (marketplaces, social commerce), and built-in marketing tools.',
+  'Business Intelligence':
+    'Business intelligence (BI) software transforms raw data from databases, spreadsheets, and SaaS applications into interactive dashboards, reports, and visualizations that inform strategic decisions. Analysts, executives, and operations teams use BI tools to identify trends, monitor KPIs, and answer ad-hoc business questions without writing SQL. The category ranges from self-service analytics platforms designed for business users to enterprise tools with advanced data modeling and governed semantic layers.',
+  'Cybersecurity Software':
+    'Cybersecurity software protects organizations from digital threats including malware, ransomware, phishing, data breaches, and unauthorized access to systems and data. IT and security teams deploy these tools across endpoints, networks, cloud infrastructure, and email systems to detect, prevent, and respond to attacks. The category encompasses a wide range of specialized solutions — from antivirus and firewalls to SIEM platforms, identity management, and zero-trust network access.',
+  'ERP Software':
+    'Enterprise resource planning (ERP) software integrates core business processes — finance, supply chain, manufacturing, procurement, and human resources — into a unified system with a shared database. Operations leaders and finance teams use ERPs to eliminate data silos, standardize workflows, and gain a single source of truth across the organization. ERP implementations are among the most consequential software decisions a company makes, often reshaping how entire organizations operate.',
+  'Learning Management Systems':
+    'Learning management systems (LMS) deliver, track, and manage training and educational content for employees, students, or customers. HR departments use them for onboarding and compliance training, educational institutions for course delivery, and SaaS companies for customer education programs. Modern LMS platforms support video-based learning, assessments, certifications, and learning path customization with analytics on completion rates and knowledge retention.',
+  'Inventory Management':
+    'Inventory management software tracks stock levels, orders, and fulfillment across warehouses, retail locations, and sales channels in real time. Operations teams and supply chain managers use these tools to prevent stockouts, reduce carrying costs, and automate reorder points based on demand forecasting. For businesses selling physical products, accurate inventory management directly impacts cash flow, customer satisfaction, and operational efficiency.',
+  'Social Media Management':
+    'Social media management software centralizes the creation, scheduling, publishing, and analysis of content across multiple social networks from a single interface. Marketing teams and social media managers use these platforms to maintain consistent posting schedules, respond to audience engagement, and measure the performance of organic and paid social campaigns. Advanced tools include social listening, competitor benchmarking, and AI-assisted content generation.',
+  'Customer Success Software':
+    'Customer success software helps subscription businesses proactively manage customer health, reduce churn, and identify expansion opportunities across their account base. Customer success managers use these platforms to monitor product usage data, track health scores, automate outreach based on risk signals, and manage renewal workflows. The category emerged alongside the SaaS business model, where recurring revenue makes customer retention as important as acquisition.',
+  'Recruitment Software':
+    'Recruitment software (also called applicant tracking systems or ATS) manages the end-to-end hiring process from job posting and candidate sourcing through interviews, evaluations, and offer management. Talent acquisition teams and hiring managers use these tools to organize applicant pipelines, collaborate on evaluations, and ensure consistent hiring practices across the organization. Modern recruitment platforms incorporate AI-powered resume screening, interview scheduling automation, and integrations with job boards and LinkedIn.',
+  'Content Management Systems':
+    'Content management systems (CMS) enable teams to create, organize, publish, and update digital content — primarily websites and web applications — without requiring deep technical expertise. Marketing teams, editors, and developers use CMS platforms to manage everything from corporate websites and blogs to complex multi-site digital experiences. The category spans traditional monolithic CMS platforms with built-in frontends and headless CMS solutions that deliver content via API to any channel.',
+  'Payment Processing':
+    'Payment processing software enables businesses to accept and manage financial transactions from customers via credit cards, debit cards, digital wallets, bank transfers, and other payment methods. E-commerce businesses, SaaS companies, and brick-and-mortar retailers depend on payment processors to handle transaction authorization, fraud detection, settlement, and regulatory compliance (PCI DSS). Modern platforms have evolved beyond simple payment acceptance to include subscription billing, multi-currency support, and embedded finance features.',
+};
+
 export function generateCategoryKnowledgePanel(
   categoryName: string,
   productCount: number,
@@ -1047,9 +1090,17 @@ export function generateCategoryKnowledgePanel(
   const top3Names = topProducts.slice(0, 3).map((p) => p.name);
   const year = new Date().getFullYear();
 
-  const description = [
-    `${categoryName}${nameSuffix} is a category of business tools `,
-    `with ${productCount} products tracked on SaaSipedia as of ${year}.`,
+  // Use hardcoded description if available, otherwise generate a smarter fallback
+  let categoryDesc = CATEGORY_DESCRIPTIONS[categoryName];
+
+  if (!categoryDesc) {
+    const isPlural = name.endsWith('s') || name.endsWith('platforms') || name.endsWith('systems');
+    const verb = isPlural ? 'are tools that help' : 'is a category of tools that helps';
+    categoryDesc = `${categoryName}${nameSuffix} ${verb} businesses streamline operations, improve efficiency, and reduce manual work in the ${name.replace(/ software$/i, '')} domain. Organizations across industries — from startups to enterprises — adopt ${name} to automate repetitive tasks, centralize data, and gain actionable insights that drive better decision-making.`;
+  }
+
+  const dynamicParts = [
+    ` SaaSipedia tracks ${productCount} ${name}${nameSuffix} products as of ${year}.`,
     top3Names.length >= 3
       ? ` The most widely adopted products include ${top3Names[0]}, ${top3Names[1]}, and ${top3Names[2]}.`
       : top3Names.length > 0
@@ -1060,7 +1111,7 @@ export function generateCategoryKnowledgePanel(
 
   return {
     title: `What is ${categoryName}${nameSuffix}?`,
-    description,
+    description: categoryDesc + dynamicParts,
   };
 }
 

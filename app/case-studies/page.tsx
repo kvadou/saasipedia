@@ -3,38 +3,61 @@ import type { Metadata } from 'next';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Case Studies -- Custom Software Built with Reap',
-  description: 'See real examples of custom software alternatives built with Reap. From CRM replacements to custom analytics dashboards.',
+  title: 'Case Studies — Custom Software Built by ReapLabs',
+  description: 'Real projects built by ReapLabs as replacements for expensive SaaS subscriptions. Operations platforms, tutor portals, CRMs, marketplaces, and more.',
   alternates: { canonical: '/case-studies' },
 };
 
 const CASE_STUDIES = [
   {
-    slug: 'custom-crm',
-    title: 'Custom CRM for a Healthcare Network',
-    category: 'CRM Software',
-    replaces: 'HubSpot, Salesforce',
-    summary: 'A HIPAA-compliant CRM built for a 50-location healthcare network. Replaced a $45k/year Salesforce subscription with a tailored system that integrated directly with their EHR.',
-    savings: '$38k/year',
+    slug: 'opshub',
+    title: 'OpsHub — Operations Platform for Story Time Chess',
+    category: 'Operations Management',
+    replaces: 'Salesforce + Monday.com + custom spreadsheets',
+    summary: 'Built a unified operations platform for a multi-market education company. Sales pipeline, tutor scheduling, forecasting dashboards, and real-time KPIs — all in one system replacing 3 separate SaaS subscriptions and countless spreadsheets. Handles scheduling across NYC, LA, SF, and Nashville markets.',
+    savings: '$52k/year',
+    buildTime: '8 weeks',
+    stack: 'React, Node.js, PostgreSQL',
+  },
+  {
+    slug: 'storytimetutors',
+    title: 'StoryTimeTutors — Tutor Portal with Gamification',
+    category: 'Learning Management',
+    replaces: 'Google Classroom + Trainual + custom PDFs',
+    summary: 'A tutor-facing portal with curriculum delivery, training modules, onboarding checklists, and a gamification system with XP and achievements. Tutors access lesson plans, track certifications, and compete on leaderboards — all from a single branded portal.',
+    savings: '$18k/year',
     buildTime: '6 weeks',
+    stack: 'Next.js, TypeScript, Prisma, PostgreSQL',
   },
   {
-    slug: 'inventory-system',
-    title: 'Real-Time Inventory Tracker for E-Commerce',
-    category: 'Inventory Management',
-    replaces: 'TradeGecko, Cin7',
-    summary: 'A multi-warehouse inventory system for a DTC brand doing $12M/year. Real-time sync across Shopify, Amazon, and wholesale channels.',
-    savings: '$22k/year',
-    buildTime: '4 weeks',
-  },
-  {
-    slug: 'project-dashboard',
-    title: 'Project Dashboard for a Construction Firm',
-    category: 'Project Management',
-    replaces: 'Monday.com, Procore',
-    summary: 'A field-friendly project tracker with photo documentation, daily logs, and subcontractor management. Built for crews who work on tablets.',
-    savings: '$15k/year',
+    slug: 'franchise-crm',
+    title: 'Franchise CRM — Prospect Pipeline for Franchise Sales',
+    category: 'CRM Software',
+    replaces: 'HubSpot + DocuSign',
+    summary: 'A franchise prospect CRM with pipeline management, automated email sequences, document e-signing, and a public-facing prospect portal with an interactive franchise academy. Built for a team selling education franchise territories.',
+    savings: '$28k/year',
     buildTime: '5 weeks',
+    stack: 'Next.js, TypeScript, Prisma, Clerk Auth',
+  },
+  {
+    slug: 'doughback',
+    title: 'Doughback — Dining Cashback Marketplace',
+    category: 'Marketplace Platform',
+    replaces: 'Custom development from scratch',
+    summary: 'A two-sided dining cashback marketplace connecting restaurants with deal-seeking diners. Receipt-based OCR verification, Stripe Connect payments, Mapbox restaurant discovery, and a merchant dashboard. From concept to production in weeks, not months.',
+    savings: 'Built for <$5k vs $150k+ agency quote',
+    buildTime: '4 weeks',
+    stack: 'Next.js, Supabase, Stripe Connect, Mapbox',
+  },
+  {
+    slug: 'saasipedia',
+    title: 'SaaSipedia — The Encyclopedia of Business Software',
+    category: 'Content Platform',
+    replaces: 'WordPress + Airtable + manual research',
+    summary: 'An automated encyclopedia of SaaS products with AI-powered data extraction, quality scoring, and comparison tools. 600+ products cataloged with features, pricing, and integrations — all independently verified. SEO-optimized with structured data, glossary, and industry filtering.',
+    savings: '90% less manual research time',
+    buildTime: '3 weeks',
+    stack: 'Next.js, TypeScript, Supabase, Anthropic AI',
   },
 ];
 
@@ -70,7 +93,7 @@ export default function CaseStudiesPage() {
               </div>
             </div>
             <p className="text-sm text-wiki-text-muted mb-4 leading-relaxed">{study.summary}</p>
-            <div className="flex items-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
               <div>
                 <span className="text-wiki-text-muted">Savings: </span>
                 <span className="font-semibold text-green-600">{study.savings}</span>
@@ -79,6 +102,10 @@ export default function CaseStudiesPage() {
                 <span className="text-wiki-text-muted">Build time: </span>
                 <span className="font-semibold text-wiki-text">{study.buildTime}</span>
               </div>
+              <div>
+                <span className="text-wiki-text-muted">Stack: </span>
+                <span className="font-medium text-wiki-text">{study.stack}</span>
+              </div>
             </div>
           </div>
         ))}
@@ -86,9 +113,9 @@ export default function CaseStudiesPage() {
 
       {/* CTA */}
       <div className="mt-12 p-6 rounded-lg bg-wiki-bg-alt border border-wiki-border text-center">
-        <h2 className="text-lg font-semibold text-wiki-text mb-2">Want a custom alternative?</h2>
+        <h2 className="text-lg font-semibold text-wiki-text mb-2">Stop overpaying for software you've outgrown</h2>
         <p className="text-sm text-wiki-text-muted mb-4">
-          Tell us what you're replacing and we'll scope it out for free.
+          ReapLabs builds custom software that replaces expensive SaaS subscriptions. Tell us what you're paying for and we'll show you a better way.
         </p>
         <a
           href="https://reaplabs.ai"
@@ -96,7 +123,7 @@ export default function CaseStudiesPage() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-wiki-accent text-white font-medium text-sm hover:bg-wiki-accent-hover transition-colors"
         >
-          Get Started with Reap
+          Get Started with ReapLabs
           <ArrowRight className="w-4 h-4" />
         </a>
       </div>
