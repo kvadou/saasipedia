@@ -74,6 +74,16 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center px-4">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
+              <Search className="w-5 h-5 text-wiki-accent" />
+            </div>
+            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Browse by Industry</h3>
+            <p className="text-xs text-wiki-text-muted leading-relaxed">
+              A CRM for healthcare is different from a CRM for construction. Find software
+              that fits your industry and business type.
+            </p>
+          </div>
+          <div className="text-center px-4">
+            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
               <BookOpen className="w-5 h-5 text-wiki-accent" />
             </div>
             <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Complete Product Profiles</h3>
@@ -90,16 +100,6 @@ export default async function HomePage() {
             <p className="text-xs text-wiki-text-muted leading-relaxed">
               No vendor-submitted listings. Product data is extracted from public
               sources — pricing pages, docs, and feature lists — then verified by AI.
-            </p>
-          </div>
-          <div className="text-center px-4">
-            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-wiki-accent" />
-            </div>
-            <h3 className="font-semibold text-wiki-text mb-1.5 text-sm">Browse by Industry</h3>
-            <p className="text-xs text-wiki-text-muted leading-relaxed">
-              A CRM for healthcare is different from a CRM for construction. Find software
-              that fits your industry and business type.
             </p>
           </div>
         </div>
